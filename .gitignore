@@ -39,3 +39,4 @@ backend/storage/app/public/*
 # Playwright
 test-results
 playwright-report
+NUL
