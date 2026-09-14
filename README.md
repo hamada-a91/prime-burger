@@ -47,6 +47,10 @@ cd backend && php artisan test            # Backend
 npm run test:e2e                          # Playwright (Backend muss auf :8000 laufen)
 ```
 
+## Dokumentation
+
+Ausführliche Anleitungen liegen in [docs/](docs/README.md): Setup und Fehlerbehebung, Admin-Handbuch, Architektur, API, Deployment.
+
 ## Inhalte pflegen
 
 Alles außer Impressum/Datenschutz wird im Admin gepflegt. Rechtstexte und Firmendaten liegen in `src/config/website.config.ts` (Platzhalter in eckigen Klammern vor dem Livegang ersetzen). UI-Texte in `src/i18n/de.ts` und `src/i18n/en.ts`, Design-Regeln in `design-system/prime-burger/MASTER.md`.

@@ -11,7 +11,8 @@ return [
         'http://127.0.0.1:5173',
         'http://127.0.0.1:5174',
     ] : [])))),
-    'allowed_origins_patterns' => [],
+    // Lokal: jeder localhost-Port (Vite weicht bei belegtem Port auf 5174, 5175, ... aus).
+    'allowed_origins_patterns' => env('APP_ENV') === 'local' ? ['#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#'] : [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,

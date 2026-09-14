@@ -20,6 +20,8 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    // Lieber abbrechen als still auf 5174/5175 ausweichen (Backend-CORS/Sanctum kennen nur feste Ports).
+    strictPort: true,
   },
   resolve: {
     alias: {
