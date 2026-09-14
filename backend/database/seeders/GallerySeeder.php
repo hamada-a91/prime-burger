@@ -66,7 +66,7 @@ class GallerySeeder extends Seeder
             $slug = basename($file, '.jpg');
             $stored = ImageProcessor::store($file, 'gallery', $slug);
             $featured = self::FEATURED[$slug] ?? null;
-            $caption = self::CAPTIONS[$slug] ?? null;
+            $caption = self::CAPTIONS[$slug] ?? ($featured ? [$featured[0], $featured[1]] : null);
 
             GalleryImage::create([
                 ...$stored,

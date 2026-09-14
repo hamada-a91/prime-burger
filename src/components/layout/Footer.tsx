@@ -1,153 +1,97 @@
-import { Link } from 'react-router-dom';
-import { useConfig } from '@/hooks/useConfig';
-import { useSettings } from '@/hooks/api';
-import { Facebook, Instagram, Linkedin, Twitter, Youtube, Hexagon } from 'lucide-react';
+import { Facebook, Instagram, MapPin } from 'lucide-react';
+import { useSiteConfig, useSiteInfo } from '@/hooks';
+import { useT } from '@/i18n';
+import { HoursTable } from '@/components/site/HoursTable';
+import { LocaleLink } from '@/components/site/LocaleLink';
+import { NAV_ITEMS } from './Header';
 
 export function Footer() {
-    const config = useConfig();
-    const { data: settings } = useSettings();
+    const t = useT();
+    const site = useSiteConfig();
+    const info = useSiteInfo();
+    const year = new Date().getFullYear();
 
-    // Helper to get setting value
-    const getSetting = (key: string) => settings?.[key] as string || '';
-    const getJsonSetting = (key: string) => settings?.[key] as Record<string, string> || {};
-
-    const contactInfo = {
-        email: getSetting('contact_email') || config.site.contact.email,
-        phone: getSetting('contact_phone') || config.site.contact.phone,
-        address: {
-            street: getJsonSetting('contact_address').street || config.site.contact.address?.street,
-            city: getJsonSetting('contact_address').city || config.site.contact.address?.city,
-            zip: getJsonSetting('contact_address').zip || config.site.contact.address?.zip,
-            country: getJsonSetting('contact_address').country || config.site.contact.address?.country,
-        }
-    };
-
-    // Fallback labels
-    const labels = {
-        phone: getSetting('label_phone') || 'Telefon',
-        email: getSetting('label_email') || 'E-Mail',
-        address: getSetting('label_address') || 'Adresse',
-    };
-
-    const currentYear = new Date().getFullYear();
-
-    const socialIcons: Record<string, typeof Hexagon> = {
-        facebook: Facebook,
-        instagram: Instagram,
-        linkedin: Linkedin,
-        twitter: Twitter,
-        youtube: Youtube,
-        xing: Hexagon, // Placeholder
-        tiktok: Hexagon, // Placeholder
-    };
+    const socials = [
+        { key: 'instagram', url: info.social.instagram, Icon: Instagram, label: 'Instagram' },
+        { key: 'facebook', url: info.social.facebook, Icon: Facebook, label: 'Facebook' },
+        { key: 'tripadvisor', url: info.social.tripadvisor, Icon: MapPin, label: 'Tripadvisor' },
+    ].filter((s) => s.url);
 
     return (
-        <footer className="bg-muted/30 border-t">
-            <div className="container mx-auto px-4 py-12 md:py-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                    {/* Brand & Social */}
-                    <div className="space-y-4">
-                        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-                            {config.site.logo?.dark && <img src={config.site.logo.dark} alt={config.site.name} className="h-8 w-auto hidden dark:block" />}
-                            {config.site.logo?.light && <img src={config.site.logo.light} alt={config.site.name} className="h-8 w-auto dark:hidden" />}
-                            <span>{config.site.name}</span>
-                        </Link>
-                        <p className="text-muted-foreground text-sm">
-                            {config.site.description}
-                        </p>
-                        <div className="flex gap-4">
-                            {config.social.links.map((link) => {
-                                const Icon = socialIcons[link.platform] || Hexagon;
-                                return (
+        <footer className="border-t border-border bg-surface">
+            <div className="container-site py-16">
+                <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+                    <div className="space-y-5">
+                        <LocaleLink to="home" className="inline-flex items-center gap-3" aria-label={site.name}>
+                            <img src={site.logo} alt="" width={64} height={57} className="h-14 w-auto" loading="lazy" />
+                            <span className="font-display text-3xl text-foreground">Prime Burger</span>
+                        </LocaleLink>
+                        <p className="max-w-xs text-sm text-muted-foreground">{t('footer.tagline')}</p>
+                        {socials.length > 0 && (
+                            <div className="flex gap-2">
+                                {socials.map(({ key, url, Icon, label }) => (
                                     <a
-                                        key={link.platform}
-                                        href={link.url}
+                                        key={key}
+                                        href={url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-muted-foreground hover:text-primary transition-colors"
+                                        aria-label={label}
+                                        className="inline-flex size-11 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                                     >
-                                        <Icon className="h-5 w-5" />
-                                        <span className="sr-only">{link.platform}</span>
+                                        <Icon className="size-5" />
                                     </a>
-                                );
-                            })}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Quick Links */}
                     <div>
-                        <h3 className="font-semibold mb-4">Navigation</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            {config.navigation.items.map((item) => (
-                                <li key={item.href}>
-                                    <Link to={item.href} className="hover:text-foreground transition-colors">
-                                        {item.label}
-                                    </Link>
+                        <h2 className="font-display text-xl text-foreground mb-4">{t('footer.navigation')}</h2>
+                        <ul className="space-y-2.5 text-sm">
+                            {NAV_ITEMS.map((item) => (
+                                <li key={item.key}>
+                                    <LocaleLink to={item.key} className="text-muted-foreground transition-colors hover:text-primary">
+                                        {t(item.label)}
+                                    </LocaleLink>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Legal */}
                     <div>
-                        <h3 className="font-semibold mb-4">Rechtliches</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li>
-                                <Link to="/imprint" className="hover:text-foreground transition-colors">
-                                    Impressum
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/privacy" className="hover:text-foreground transition-colors">
-                                    Datenschutz
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/terms" className="hover:text-foreground transition-colors">
-                                    AGB
-                                </Link>
-                            </li>
-                        </ul>
+                        <h2 className="font-display text-xl text-foreground mb-4">{t('contact.address')}</h2>
+                        <address className="not-italic space-y-2.5 text-sm text-muted-foreground">
+                            <p>
+                                {info.address.street}
+                                <br />
+                                {info.address.zip} {info.address.city}
+                            </p>
+                            <p>
+                                <a href={info.phoneHref} className="transition-colors hover:text-primary">{info.phone}</a>
+                            </p>
+                            <p>
+                                <a href={`mailto:${info.email}`} className="transition-colors hover:text-primary break-all">{info.email}</a>
+                            </p>
+                            <p>
+                                <a href={info.mapsUrl} target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
+                                    {t('contact.route')}
+                                </a>
+                            </p>
+                        </address>
                     </div>
 
-                    {/* Contact */}
                     <div>
-                        <h3 className="font-semibold mb-4">Kontakt</h3>
-                        <ul className="space-y-3 text-sm text-muted-foreground">
-                            {contactInfo.address.street && (
-                                <li>
-                                    <strong className="block text-foreground">{labels.address}</strong>
-                                    {contactInfo.address.street}<br />
-                                    {contactInfo.address.zip} {contactInfo.address.city}
-                                </li>
-                            )}
-                            <li>
-                                <strong className="block text-foreground">{labels.email}</strong>
-                                <a href={`mailto:${contactInfo.email}`} className="hover:text-primary">
-                                    {contactInfo.email}
-                                </a>
-                            </li>
-                            {contactInfo.phone && (
-                                <li>
-                                    <strong className="block text-foreground">{labels.phone}</strong>
-                                    <a href={`tel:${contactInfo.phone}`} className="hover:text-primary">
-                                        {contactInfo.phone}
-                                    </a>
-                                </li>
-                            )}
-                        </ul>
+                        <h2 className="font-display text-xl text-foreground mb-4">{t('hours.title')}</h2>
+                        <HoursTable />
                     </div>
                 </div>
 
-                <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-                    <p>© {currentYear} {config.site.name}. Alle Rechte vorbehalten.</p>
-                    <div className="flex items-center gap-2">
-                        <span>Designed bei</span>
-                        <a href="https://vorpoint.de" target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-foreground">
-                            vorpoint.de
-                        </a>
-                        <img src="/public/logo_main2.webp" alt="Vorpoint Logo" className="h-6 w-auto" />
-                    </div>
+                <div className="mt-14 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+                    <p>© {year} {info.name}. {t('footer.rights')}</p>
+                    <ul className="flex gap-5">
+                        <li><LocaleLink to="imprint" className="hover:text-foreground">{t('nav.imprint')}</LocaleLink></li>
+                        <li><LocaleLink to="privacy" className="hover:text-foreground">{t('nav.privacy')}</LocaleLink></li>
+                    </ul>
                 </div>
             </div>
         </footer>

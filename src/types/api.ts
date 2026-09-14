@@ -1,65 +1,18 @@
-// API Types for Phase 11+
+// API types mirroring the Laravel backend.
 
-export interface BlogPost {
-    id: number;
-    slug: string;
-    title: string;
-    excerpt: string;
-    content: string;
-    featured_image?: string;
-    meta?: Record<string, unknown>;
-    is_published: boolean;
-    published_at: string | null;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface JobListing {
-    id: number;
-    slug: string;
-    title: string;
-    description: string;
-    requirements?: string;
-    tasks?: string;
-    foot_notes?: string;
-    location?: string;
-    type: 'full-time' | 'part-time' | 'freelance' | 'internship';
-    salary_range?: string;
-    department?: string;
-    is_active: boolean;
-    expires_at?: string;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface ContactSubmission {
-    id: number;
-    name: string;
-    email: string;
-    phone?: string;
-    subject?: string;
-    message: string;
-    status: 'new' | 'read' | 'replied' | 'archived';
-    created_at: string;
-    updated_at: string;
-}
-
-export interface ContactSlot {
-    id: number;
-    date: string;
-    time: string;
-    is_available: boolean;
-    booked_by?: string;
-    created_at: string;
-    updated_at: string;
+export interface Translated {
+    de?: string | null;
+    en?: string | null;
 }
 
 export interface User {
     id: number;
     name: string;
     email: string;
-    created_at: string;
-    updated_at: string;
+}
+
+export interface AuthResponse {
+    user: User;
 }
 
 export interface PaginatedResponse<T> {
@@ -70,66 +23,153 @@ export interface PaginatedResponse<T> {
     total: number;
 }
 
-export interface AuthResponse {
-    user: User;
+// ---- Settings ----
+
+export type DayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+
+export interface DayHours {
+    open: string;
+    close: string;
+    closed: boolean;
 }
 
-export interface DashboardStats {
-    contacts: {
+export type OpeningHours = Record<DayKey, DayHours>;
+
+export interface Address {
+    street?: string;
+    zip?: string;
+    city?: string;
+    country?: string;
+}
+
+export interface DeliveryPlatform {
+    key: string;
+    name: string;
+    url: string;
+    eta: string;
+    badge?: Translated;
+}
+
+export interface SocialLinks {
+    instagram?: string;
+    facebook?: string;
+    tripadvisor?: string;
+}
+
+export interface SettingsMap {
+    site_name?: string;
+    contact_email?: string;
+    contact_phone?: string;
+    contact_address?: Address;
+    opening_hours?: OpeningHours;
+    delivery_platforms?: DeliveryPlatform[];
+    social_links?: SocialLinks;
+    maps_url?: string;
+    hero_headline?: Translated;
+    hero_subline?: Translated;
+    about_story?: Translated;
+    about_philosophy?: Translated;
+    reservation_notice?: Translated;
+    reservation_email?: string;
+}
+
+// ---- Menu ----
+
+export type MenuTag = 'vegan' | 'vegetarian' | 'spicy' | 'signature' | 'new';
+export type Allergen = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'L' | 'M' | 'N' | 'O' | 'P' | 'R';
+
+export interface MenuVariant {
+    label: Translated;
+    price: number;
+}
+
+export interface MenuItem {
+    id: number;
+    category_id: number;
+    name: Translated;
+    description?: Translated | null;
+    price: string | number | null;
+    variants?: MenuVariant[] | null;
+    price_note?: Translated | null;
+    allergens?: Allergen[] | null;
+    tags?: MenuTag[] | null;
+    is_available: boolean;
+    sort_order: number;
+    category?: MenuCategory;
+}
+
+export interface MenuCategory {
+    id: number;
+    name: Translated;
+    description?: Translated | null;
+    sort_order: number;
+    is_active: boolean;
+    items?: MenuItem[];
+    items_count?: number;
+}
+
+// ---- Gallery ----
+
+export type GalleryCategory = 'burger' | 'food' | 'ambience' | 'drinks' | 'misc';
+
+export interface GalleryImage {
+    id: number;
+    path: string;
+    thumb_path: string;
+    url: string;
+    thumb_url: string;
+    caption?: Translated | null;
+    category: GalleryCategory;
+    is_featured: boolean;
+    featured_title?: Translated | null;
+    featured_subtitle?: Translated | null;
+    sort_order: number;
+    width?: number | null;
+    height?: number | null;
+}
+
+// ---- Reservations ----
+
+export type ReservationStatus = 'new' | 'confirmed' | 'declined' | 'archived';
+
+export interface Reservation {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    guests: number;
+    date: string;
+    time: string;
+    notes?: string | null;
+    locale: 'de' | 'en';
+    status: ReservationStatus;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ReservationFormData {
+    name: string;
+    email: string;
+    phone: string;
+    guests: number;
+    date: string;
+    time: string;
+    notes?: string;
+    website?: string;
+}
+
+// ---- Stats ----
+
+export interface Stats {
+    reservations: {
         total: number;
         new: number;
         today: number;
         this_week: number;
-        this_month: number;
+        upcoming: number;
         by_day: { date: string; count: number }[];
+        latest: Reservation[];
     };
-    blog: {
-        total: number;
-        published: number;
-        drafts: number;
-    };
-    jobs: {
-        total: number;
-        active: number;
-        expired: number;
-    };
-    team?: {
-        total: number;
-    };
-}
-
-export interface ContactFormData {
-    name: string;
-    email: string;
-    phone?: string;
-    subject?: string;
-    message: string;
-    website?: string;
-}
-
-export interface BlogFormData {
-    title: string;
-    slug: string;
-    excerpt?: string;
-    content: string;
-    featured_image?: string | File;
-    is_published: boolean;
-}
-
-export interface JobFormData {
-    title: string;
-    slug: string;
-    description: string;
-    requirements?: string;
-    tasks?: string;
-    foot_notes?: string;
-    type: 'full-time' | 'part-time' | 'freelance' | 'internship';
-    location?: string;
-    salary_range?: string;
-    is_active: boolean;
-}
-
-export interface SlotFormData {
-    date: string;
-    time: string;
+    menu: { items: number; unavailable: number };
+    gallery: { images: number; featured: number };
 }

@@ -1,14 +1,2 @@
-// src/hooks/index.ts
-export {
-    ConfigProvider,
-    useConfig,
-    useSiteConfig,
-    useNavigation,
-    usePageConfig,
-    usePageBlocks,
-    useLegalConfig,
-    useSEOConfig,
-    useSocialConfig,
-    useAPIConfig,
-    useTokens
-} from './useConfig';
+export { ConfigProvider, useConfig, useSiteConfig, useLegalConfig } from './useConfig';
+export { useSiteInfo } from './useSiteInfo';

@@ -1,65 +1,50 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+import { useSiteConfig } from '@/hooks';
+import { LOCALES, localePath, useLocale, type RouteKey } from '@/i18n';
 
 interface SEOHeadProps {
     title: string;
     description: string;
-    canonical?: string;
+    /** Route key used to build canonical + hreflang alternates. */
+    routeKey?: RouteKey;
     ogImage?: string;
-    ogType?: 'website' | 'article';
     noIndex?: boolean;
-    article?: {
-        publishedTime?: string;
-        modifiedTime?: string;
-        author?: string;
-        tags?: string[];
-    };
 }
 
-export function SEOHead({
-    title,
-    description,
-    canonical,
-    ogImage,
-    ogType = 'website',
-    noIndex = false,
-    article,
-}: SEOHeadProps) {
-    const siteName = 'Landing Page Template'; // Should be from config later
-    const fullTitle = `${title} | ${siteName}`;
+export function SEOHead({ title, description, routeKey, ogImage, noIndex = false }: SEOHeadProps) {
+    const site = useSiteConfig();
+    const locale = useLocale();
+    const location = useLocation();
+    const base = site.url.replace(/\/+$/, '');
+    const fullTitle = `${title} | ${site.name}`;
+    const canonical = `${base}${routeKey ? localePath(locale, routeKey) : location.pathname}`;
+    const image = `${base}${ogImage ?? site.ogImage}`;
 
     return (
         <Helmet>
-            {/* Basic Meta Tags */}
+            <html lang={locale} />
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
-            {canonical && <link rel="canonical" href={canonical} />}
+            <link rel="canonical" href={canonical} />
             {noIndex && <meta name="robots" content="noindex, nofollow" />}
+            {routeKey && LOCALES.map((alt) => (
+                <link key={alt} rel="alternate" hrefLang={alt} href={`${base}${localePath(alt, routeKey)}`} />
+            ))}
+            {routeKey && <link rel="alternate" hrefLang="x-default" href={`${base}${localePath('de', routeKey)}`} />}
 
-            {/* Open Graph */}
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description} />
-            {ogImage && <meta property="og:image" content={ogImage} />}
-            {canonical && <meta property="og:url" content={canonical} />}
-            <meta property="og:type" content={ogType} />
-            <meta property="og:site_name" content={siteName} />
+            <meta property="og:image" content={image} />
+            <meta property="og:url" content={canonical} />
+            <meta property="og:type" content="website" />
+            <meta property="og:site_name" content={site.name} />
+            <meta property="og:locale" content={locale === 'de' ? 'de_DE' : 'en_GB'} />
 
-            {/* Twitter Card */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
-            {ogImage && <meta name="twitter:image" content={ogImage} />}
-
-            {/* Article specific tags */}
-            {ogType === 'article' && article && (
-                <>
-                    {article.publishedTime && <meta property="article:published_time" content={article.publishedTime} />}
-                    {article.modifiedTime && <meta property="article:modified_time" content={article.modifiedTime} />}
-                    {article.author && <meta property="article:author" content={article.author} />}
-                    {article.tags?.map((tag) => (
-                        <meta key={tag} property="article:tag" content={tag} />
-                    ))}
-                </>
-            )}
+            <meta name="twitter:image" content={image} />
         </Helmet>
     );
 }

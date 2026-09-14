@@ -30,6 +30,8 @@ function getCookie(name: string): string | null {
 
 class ApiClient {
     private csrfReady = false;
+    /** Sent as X-Locale so validation messages and guest mails match the visitor's language. */
+    locale = 'de';
 
     async csrf(): Promise<void> {
         await fetch(`${API_ROOT}/sanctum/csrf-cookie`, {
@@ -54,6 +56,7 @@ class ApiClient {
         const headers: Record<string, string> = {
             Accept: 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
+            'X-Locale': this.locale,
             ...(options.headers as Record<string, string> | undefined),
         };
 

@@ -1,105 +1,65 @@
-# Modern Landing Page Template
+# Prime Burger Leipzig
 
-A production-ready Landing Page Template featuring a React frontend with a Laravel API backend.
+Website und Verwaltung für das Restaurant Prime Burger (Große Fleischergasse 4, Leipzig).
 
-![Dashboard Preview](docs/assets/dashboard-preview.png)
+- **Website** (DE/EN): Startseite, Über uns, Speisekarte, Galerie, Reservieren, Impressum, Datenschutz
+- **Admin** (`/admin`): Reservierungsanfragen, Speisekarte (Kategorien, Gerichte, Preise, Allergene), Galerie (Upload, Startseiten-Highlights), Einstellungen (Kontakt, Öffnungszeiten, Lieferservice, Texte, Social)
+- **Reservierung**: Anfrage per Formular, E-Mail ans Restaurant + Eingangsbestätigung an den Gast, Status-Pflege im Admin
 
-## 🚀 Features
+## Stack
 
-- **Frontend**: React + TypeScript + Vite + Tailwind CSS
-- **Backend**: Laravel 11 API + Sanctum Auth
-- **Admin Dashboard**: Content Management for Blog, Jobs, and Settings
-- **Block System**: Dynamic page building with reusable blocks (Hero, Features, Testimonials, etc.)
-- **Performance**: Optimized images (WebP), Lazy Loading, Scroll Reveal animations
-- **Theming**: Dark Mode support (System/Light/Dark)
+- Frontend: React 19, Vite 7, TypeScript, Tailwind CSS 4, shadcn/Radix, TanStack Query, react-hook-form + zod
+- Backend: Laravel 12, Sanctum (Session-Auth), Intervention Image (WebP-Pipeline), SQLite (lokal) / MySQL (Produktion)
+- Tests: Vitest (Unit), PHPUnit (Backend), Playwright (E2E)
 
-## 🛠 Prerequisites
+## Lokal starten
 
-- Docker Desktop (for Laravel Sail)
-- Node.js 18+
-- Composer
-
-## 📦 Installation
-
-### 1. Clone Repository
+Voraussetzungen: Node 22, PHP 8.3 mit `gd`, `sqlite3`, `pdo_sqlite`, Composer.
 
 ```bash
-git clone <your-repo-url>
-cd landing-page-template
-```
-
-### 2. Backend Setup (Laravel Sail)
-
-The backend is containerized using Laravel Sail (Docker).
-
-```bash
+# Backend
 cd backend
-
-# Install PHP dependencies (using a small temporary container if you don't have PHP local)
-docker run --rm \
-    -u "$(id -u):$(id -g)" \
-    -v "$(pwd):/var/www/html" \
-    -w /var/www/html \
-    laravelsail/php82-composer:latest \
-    composer install --ignore-platform-reqs
-
-# Copy environment file
+composer install
 cp .env.example .env
-
-# Start Docker containers
-./vendor/bin/sail up -d
-
-# Run migrations and seeders
-./vendor/bin/sail artisan migrate --seed
-
-# Create storage link (Important for images!)
-./vendor/bin/sail artisan storage:link
-
-# Create Admin User
-./vendor/bin/sail artisan tinker
-# >>> User::create(['name' => 'Admin', 'email' => 'admin@example.com', 'password' => 'password'])
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate --seed      # legt Admin, Einstellungen, Speisekarte und Galerie (aus material/) an
+php artisan storage:link
+php artisan serve --port=8000
 ```
 
-> **Note**: This project requires `intervention/image` for image processing, which is pre-installed in `composer.json`. The Docker image handles the necessary PHP extensions (GD).
-
-### 3. Frontend Setup
-
 ```bash
-# In the root directory
+# Frontend (im Projektroot)
 npm install
-
-# Copy environment file
-cp .env.example .env
-
-# Start Development Server
+cp .env.example .env            # VITE_API_URL=http://localhost:8000/api
 npm run dev
 ```
 
-Visit `http://localhost:5173` for the frontend and `http://localhost:5173/admin` for the admin panel.
+- Website: http://localhost:5173 (leitet auf `/de` oder `/en` weiter)
+- Admin: http://localhost:5173/admin, Zugang aus `backend/.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`, Standard `admin@example.com` / `password`)
+- Mails landen lokal in `backend/storage/logs/laravel.log` (`MAIL_MAILER=log`). Für echten Versand SMTP in `backend/.env` eintragen und `MAIL_RESERVATION_ADDRESS` setzen.
 
-## 🏗 Architecture
+## Tests
 
-- **Frontend**: `src/` - React components, pages, and config.
-- **Backend**: `backend/` - Laravel API.
-- **Config**: `src/config/website.config.ts` - Static site configuration.
-- **Documentation**: `docs/` - Detailed guides and implementation plans.
+```bash
+npm run lint && npm run test:run          # Frontend
+cd backend && php artisan test            # Backend
+npm run test:e2e                          # Playwright (Backend muss auf :8000 laufen)
+```
 
-## 🧱 Key Libraries
+## Inhalte pflegen
 
-- **UI**: [shadcn/ui](https://ui.shadcn.com), [Tailwind CSS](https://tailwindcss.com), [Lucide React](https://lucide.dev)
-- **State/Data**: [TanStack Query](https://tanstack.com/query) v5, [Zustand](https://github.com/pmndrs/zustand)
-- **Forms**: [React Hook Form](https://react-hook-form.com), [Zod](https://zod.dev)
-- **Backend**: [Laravel 11](https://laravel.com), [Sanctum](https://laravel.com/docs/sanctum)
-- **Image Processing**: [Intervention Image](https://image.intervention.io) (v3)
+Alles außer Impressum/Datenschutz wird im Admin gepflegt. Rechtstexte und Firmendaten liegen in `src/config/website.config.ts` (Platzhalter in eckigen Klammern vor dem Livegang ersetzen). UI-Texte in `src/i18n/de.ts` und `src/i18n/en.ts`, Design-Regeln in `design-system/prime-burger/MASTER.md`.
 
-## 📚 Documentation
+Die Originalfotos, das Logo und die Texte der alten Website liegen in `material/`.
 
-For more detailed information, check the `docs/` folder:
+## Produktion
 
-- [Template Guide](docs/TEMPLATE_GUIDE.md) - How to use and customize the template
-- [Phase 13 Enhancements](docs/PHASE_13_ENHANCEMENTS.md) - Latest features (Dark Mode, Analytics, etc.)
-- [Improvement Plan](docs/IMPROVEMENT_PLAN.md) - Rückführung der Bugfixes/Verbesserungen aus Kundenprojekten (Phasen 14–19)
+`docker-compose.prod.yml` baut Frontend (nginx), API (php-fpm) und MySQL. Ablauf siehe `deploy.sh`:
 
-## 📝 License
+```bash
+cp backend/.env.example backend/.env      # DB_*, MAIL_*, APP_URL, FRONTEND_URL, SANCTUM_STATEFUL_DOMAINS, ADMIN_* setzen
+./deploy.sh
+```
 
-MIT
+Beim ersten Deploy zusätzlich `docker compose -f docker-compose.prod.yml exec api php artisan db:seed`.

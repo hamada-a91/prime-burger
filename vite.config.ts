@@ -8,11 +8,8 @@ function htmlFromConfig() {
     name: 'html-from-config',
     transformIndexHtml(html: string) {
       return html
-        .replaceAll('%LANG%', websiteConfig.site.language)
         .replaceAll('%TITLE%', websiteConfig.site.name)
-        .replaceAll('%DESCRIPTION%', websiteConfig.site.description)
-        .replaceAll('%FAVICON%', websiteConfig.site.logo.favicon)
-        .replaceAll('%THEME_COLOR%', `hsl(${websiteConfig.tokens.colors.primary})`)
+        .replaceAll('%THEME_COLOR%', websiteConfig.site.themeColor)
     },
   }
 }

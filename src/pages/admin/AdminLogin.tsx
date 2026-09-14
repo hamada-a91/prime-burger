@@ -46,12 +46,13 @@ export function AdminLogin() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md shadow-lg">
-                <CardHeader className="text-center space-y-2">
-                    <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
+                <CardHeader className="text-center space-y-3">
+                    <img src="/assets/logo.png" alt="Prime Burger" width={96} height={85} className="mx-auto h-20 w-auto" />
+                    <CardTitle className="text-2xl font-bold">Verwaltung</CardTitle>
                     <CardDescription>
-                        Bitte authentifizieren Sie sich für den Zugriff.
+                        Speisekarte, Galerie, Reservierungen und Infos bearbeiten.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -67,7 +68,7 @@ export function AdminLogin() {
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="admin@example.com"
+                                placeholder="admin@prime-burger.de"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -92,9 +93,6 @@ export function AdminLogin() {
                             Anmelden
                         </Button>
 
-                        <div className="text-center text-xs text-muted-foreground mt-4">
-                            Geben Sie Ihre Admin-Zugangsdaten ein.
-                        </div>
                     </form>
                 </CardContent>
             </Card>

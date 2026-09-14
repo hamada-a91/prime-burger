@@ -1,14 +1,19 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-
-export interface SettingsMap {
-    [key: string]: string | number | boolean | object | null;
-}
+import type { SettingsMap } from '@/types/api';
 
 export function useSettings() {
     return useQuery({
         queryKey: ['settings'],
         queryFn: () => api.get<SettingsMap>('/settings'),
+        staleTime: 10 * 60 * 1000,
+    });
+}
+
+export function useAdminSettings() {
+    return useQuery({
+        queryKey: ['admin', 'settings'],
+        queryFn: () => api.get<SettingsMap>('/admin/settings'),
     });
 }
 
@@ -18,7 +23,7 @@ export function useUpdateSettings() {
     return useMutation({
         mutationFn: (data: SettingsMap) => api.post<{ message: string; settings: SettingsMap }>('/admin/settings', data),
         onSuccess: (data) => {
-            queryClient.setQueryData(['settings'], data.settings);
+            queryClient.setQueryData(['admin', 'settings'], data.settings);
             queryClient.invalidateQueries({ queryKey: ['settings'] });
         },
     });

@@ -1,186 +1,164 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { Loader2, Save } from 'lucide-react';
+import { useAdminSettings, useUpdateSettings } from '@/hooks/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useSettings, useUpdateSettings } from '@/hooks/api';
-import type { SettingsMap } from '@/hooks/api';
-import { toast } from 'sonner';
-import { Loader2, Save } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { TranslatedInput } from '@/components/admin/TranslatedInput';
+import { DAY_KEYS } from '@/lib/opening-hours';
+import { cn } from '@/lib/utils';
+import type { DayKey, DeliveryPlatform, OpeningHours, SettingsMap } from '@/types/api';
 
-interface SettingsFormValues {
-    contact_email: string;
-    contact_phone: string;
-    contact_address_street: string;
-    contact_address_city: string;
-    contact_address_zip: string;
-    contact_address_country: string;
-    opening_hours_mo_fr: string;
-    opening_hours_sa: string;
-    opening_hours_so: string;
-    label_phone: string;
-    label_email: string;
-    label_address: string;
-}
+const DAY_LABELS: Record<DayKey, string> = { mon: 'Montag', tue: 'Dienstag', wed: 'Mittwoch', thu: 'Donnerstag', fri: 'Freitag', sat: 'Samstag', sun: 'Sonntag' };
+const TABS = ['Kontakt', 'Öffnungszeiten', 'Lieferservice', 'Texte', 'Social'] as const;
+
+const EMPTY_HOURS: OpeningHours = Object.fromEntries(DAY_KEYS.map((d) => [d, { open: '11:30', close: '22:00', closed: false }])) as OpeningHours;
 
 export function Settings() {
-    const { data: settings, isLoading } = useSettings();
-    const updateSettings = useUpdateSettings();
-
-    const { register, handleSubmit, reset } = useForm<SettingsFormValues>();
+    const { data, isLoading } = useAdminSettings();
+    const save = useUpdateSettings();
+    const [tab, setTab] = useState<(typeof TABS)[number]>('Kontakt');
+    const [form, setForm] = useState<SettingsMap>({});
 
     useEffect(() => {
-        if (settings) {
-            // Flatten nested objects for the form
-            const address = settings.contact_address as Record<string, string> || {};
-            const hours = settings.opening_hours as Record<string, string> || {};
-
-            reset({
-                contact_email: settings.contact_email as string || '',
-                contact_phone: settings.contact_phone as string || '',
-                contact_address_street: address.street || '',
-                contact_address_city: address.city || '',
-                contact_address_zip: address.zip || '',
-                contact_address_country: address.country || '',
-                opening_hours_mo_fr: hours['Mo-Fr'] || '',
-                opening_hours_sa: hours['Sa'] || '',
-                opening_hours_so: hours['So'] || '',
-                label_phone: settings.label_phone as string || '',
-                label_email: settings.label_email as string || '',
-                label_address: settings.label_address as string || '',
+        if (data) {
+            setForm({
+                ...data,
+                contact_address: data.contact_address ?? {},
+                opening_hours: data.opening_hours ?? EMPTY_HOURS,
+                delivery_platforms: data.delivery_platforms ?? [],
+                social_links: data.social_links ?? {},
             });
         }
-    }, [settings, reset]);
+    }, [data]);
 
-    async function onSubmit(data: SettingsFormValues) {
-        // Re-structure data for API
-        const apiData: SettingsMap = {
-            contact_email: data.contact_email,
-            contact_phone: data.contact_phone,
-            contact_address: {
-                street: data.contact_address_street,
-                city: data.contact_address_city,
-                zip: data.contact_address_zip,
-                country: data.contact_address_country,
-            },
-            opening_hours: {
-                'Mo-Fr': data.opening_hours_mo_fr,
-                'Sa': data.opening_hours_sa,
-                'So': data.opening_hours_so,
-            },
-            label_phone: data.label_phone,
-            label_email: data.label_email,
-            label_address: data.label_address,
-        };
+    const set = <K extends keyof SettingsMap>(key: K, value: SettingsMap[K]) => setForm((f) => ({ ...f, [key]: value }));
 
+    const setDay = (day: DayKey, patch: Partial<OpeningHours[DayKey]>) => {
+        const hours = form.opening_hours ?? EMPTY_HOURS;
+        set('opening_hours', { ...hours, [day]: { ...hours[day], ...patch } });
+    };
+
+    const setPlatform = (index: number, patch: Partial<DeliveryPlatform>) => {
+        const list = [...(form.delivery_platforms ?? [])];
+        list[index] = { ...list[index], ...patch };
+        set('delivery_platforms', list);
+    };
+
+    const submit = async (e: React.FormEvent) => {
+        e.preventDefault();
         try {
-            await updateSettings.mutateAsync(apiData);
-            toast.success('Einstellungen gespeichert');
+            await save.mutateAsync(form);
+            toast.success('Einstellungen gespeichert.');
         } catch {
-            toast.error('Fehler beim Speichern');
+            toast.error('Speichern fehlgeschlagen.');
         }
-    }
+    };
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center p-8">
-                <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-        );
+        return <div className="flex justify-center p-10"><Loader2 className="size-8 animate-spin text-muted-foreground" /></div>;
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Einstellungen</h1>
-                <Button onClick={handleSubmit(onSubmit)} disabled={updateSettings.isPending}>
-                    {updateSettings.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    Speichern
+        <form onSubmit={submit} className="space-y-6">
+            <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap gap-1 rounded-lg border border-border bg-card p-1" role="tablist">
+                    {TABS.map((name) => (
+                        <button key={name} type="button" role="tab" aria-selected={tab === name} onClick={() => setTab(name)} className={cn('rounded-md px-4 py-2 text-sm font-semibold transition-colors', tab === name ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground')}>
+                            {name}
+                        </button>
+                    ))}
+                </div>
+                <Button type="submit" disabled={save.isPending} className="ml-auto">
+                    {save.isPending ? <Loader2 className="animate-spin" /> : <Save />} Speichern
                 </Button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* Contact Info */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Kontaktinformationen</CardTitle>
-                        <CardDescription>Diese Informationen werden im Footer und auf der Kontaktseite angezeigt.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>E-Mail</Label>
-                                <Input {...register('contact_email')} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Telefon</Label>
-                                <Input {...register('contact_phone')} />
-                            </div>
+            <div className="rounded-lg border border-border bg-card p-6 space-y-6">
+                {tab === 'Kontakt' && (
+                    <>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <Field label="Name des Restaurants" id="site_name"><Input id="site_name" value={form.site_name ?? ''} onChange={(e) => set('site_name', e.target.value)} /></Field>
+                            <Field label="Telefon" id="contact_phone"><Input id="contact_phone" value={form.contact_phone ?? ''} onChange={(e) => set('contact_phone', e.target.value)} /></Field>
+                            <Field label="Öffentliche E-Mail" id="contact_email"><Input id="contact_email" type="email" value={form.contact_email ?? ''} onChange={(e) => set('contact_email', e.target.value)} /></Field>
+                            <Field label="Empfänger für Reservierungsanfragen" id="reservation_email" hint="Wird nicht öffentlich angezeigt."><Input id="reservation_email" type="email" value={form.reservation_email ?? ''} onChange={(e) => set('reservation_email', e.target.value)} /></Field>
                         </div>
+                        <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
+                            <Field label="Straße und Hausnummer" id="street"><Input id="street" value={form.contact_address?.street ?? ''} onChange={(e) => set('contact_address', { ...form.contact_address, street: e.target.value })} /></Field>
+                            <Field label="PLZ" id="zip"><Input id="zip" value={form.contact_address?.zip ?? ''} onChange={(e) => set('contact_address', { ...form.contact_address, zip: e.target.value })} /></Field>
+                            <Field label="Stadt" id="city"><Input id="city" value={form.contact_address?.city ?? ''} onChange={(e) => set('contact_address', { ...form.contact_address, city: e.target.value })} /></Field>
+                        </div>
+                        <Field label="Google-Maps-Link" id="maps_url"><Input id="maps_url" type="url" value={form.maps_url ?? ''} onChange={(e) => set('maps_url', e.target.value)} /></Field>
+                    </>
+                )}
 
-                        <div className="space-y-2">
-                            <Label>Adresse</Label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input placeholder="Straße & Hausnummer" {...register('contact_address_street')} />
-                                <div className="grid grid-cols-2 gap-2">
-                                    <Input placeholder="PLZ" {...register('contact_address_zip')} />
-                                    <Input placeholder="Stadt" {...register('contact_address_city')} />
+                {tab === 'Öffnungszeiten' && (
+                    <div className="space-y-3">
+                        {DAY_KEYS.map((day) => {
+                            const value = (form.opening_hours ?? EMPTY_HOURS)[day];
+                            return (
+                                <div key={day} className="grid items-center gap-3 sm:grid-cols-[120px_1fr_auto_1fr_auto]">
+                                    <span className="font-semibold">{DAY_LABELS[day]}</span>
+                                    <Input type="time" value={value.open} disabled={value.closed} onChange={(e) => setDay(day, { open: e.target.value })} aria-label={`${DAY_LABELS[day]} öffnet`} />
+                                    <span className="text-center text-sm text-muted-foreground">bis</span>
+                                    <Input type="time" value={value.close} disabled={value.closed} onChange={(e) => setDay(day, { close: e.target.value })} aria-label={`${DAY_LABELS[day]} schließt`} />
+                                    <label className="flex items-center gap-2 text-sm">
+                                        <Switch checked={value.closed} onCheckedChange={(closed) => setDay(day, { closed })} /> Geschlossen
+                                    </label>
                                 </div>
-                                <Input placeholder="Land" {...register('contact_address_country')} className="md:col-span-2" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                            );
+                        })}
+                    </div>
+                )}
 
-                {/* Opening Hours */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Öffnungszeiten</CardTitle>
-                        <CardDescription>Definieren Sie Ihre Erreichbarkeiten.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label>Mo - Fr</Label>
-                                <Input {...register('opening_hours_mo_fr')} placeholder="09:00 - 18:00" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Samstag</Label>
-                                <Input {...register('opening_hours_sa')} placeholder="10:00 - 14:00" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Sonntag</Label>
-                                <Input {...register('opening_hours_so')} placeholder="Geschlossen" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                {tab === 'Lieferservice' && (
+                    <div className="space-y-6">
+                        {(form.delivery_platforms ?? []).map((platform, i) => (
+                            <fieldset key={platform.key} className="grid gap-4 rounded-md border border-border p-4 md:grid-cols-2">
+                                <legend className="px-1 text-sm font-bold">{platform.name}</legend>
+                                <Field label="Link zur Bestellseite" id={`url-${platform.key}`}><Input id={`url-${platform.key}`} type="url" value={platform.url} onChange={(e) => setPlatform(i, { url: e.target.value })} /></Field>
+                                <Field label="Lieferzeit (Anzeige)" id={`eta-${platform.key}`}><Input id={`eta-${platform.key}`} value={platform.eta} onChange={(e) => setPlatform(i, { eta: e.target.value })} placeholder="30-45 Min." /></Field>
+                                <div className="md:col-span-2">
+                                    <TranslatedInput label="Badge (z. B. Beliebt / Schnell / Neu)" value={platform.badge} onChange={(badge) => setPlatform(i, { badge })} />
+                                </div>
+                            </fieldset>
+                        ))}
+                        <p className="text-xs text-muted-foreground">Leere Links werden trotzdem angezeigt. Um eine Plattform zu entfernen, wenden Sie sich an die Technik.</p>
+                    </div>
+                )}
 
-                {/* Labels */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Beschriftungen (Labels)</CardTitle>
-                        <CardDescription>Passen Sie die Überschriften der Kontakt-Sektionen an.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label>Telefon Label</Label>
-                                <Input {...register('label_phone')} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>E-Mail Label</Label>
-                                <Input {...register('label_email')} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Adresse Label</Label>
-                                <Input {...register('label_address')} />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </form>
+                {tab === 'Texte' && (
+                    <div className="space-y-6">
+                        <TranslatedInput label="Hero-Überschrift (Startseite)" value={form.hero_headline} onChange={(v) => set('hero_headline', v)} />
+                        <TranslatedInput label="Hero-Unterzeile" multiline rows={2} value={form.hero_subline} onChange={(v) => set('hero_subline', v)} />
+                        <TranslatedInput label="Unsere Geschichte" multiline rows={5} value={form.about_story} onChange={(v) => set('about_story', v)} />
+                        <TranslatedInput label="Unsere Philosophie" multiline rows={4} value={form.about_philosophy} onChange={(v) => set('about_philosophy', v)} />
+                        <TranslatedInput label="Hinweis auf der Reservierungsseite" multiline rows={2} value={form.reservation_notice} onChange={(v) => set('reservation_notice', v)} />
+                    </div>
+                )}
+
+                {tab === 'Social' && (
+                    <div className="grid gap-4 md:grid-cols-3">
+                        {(['instagram', 'facebook', 'tripadvisor'] as const).map((key) => (
+                            <Field key={key} label={key.charAt(0).toUpperCase() + key.slice(1)} id={`social-${key}`}>
+                                <Input id={`social-${key}`} type="url" placeholder="https://" value={form.social_links?.[key] ?? ''} onChange={(e) => set('social_links', { ...form.social_links, [key]: e.target.value })} />
+                            </Field>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </form>
+    );
+}
+
+function Field({ label, id, hint, children }: { label: string; id: string; hint?: string; children: React.ReactNode }) {
+    return (
+        <div className="space-y-1.5">
+            <Label htmlFor={id}>{label}</Label>
+            {children}
+            {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
         </div>
     );
 }

@@ -1,49 +1,53 @@
 import { Helmet } from 'react-helmet-async';
+import { useSiteConfig, useSiteInfo } from '@/hooks';
+import { localePath, useLocale } from '@/i18n';
+import { DAY_KEYS } from '@/lib/opening-hours';
 
-interface JsonLdProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    schema: Record<string, any>;
-}
+const DAY_NAMES: Record<string, string> = {
+    mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday',
+};
 
-export function JsonLd({ schema }: JsonLdProps) {
+/** schema.org Restaurant markup, built from live settings. */
+export function RestaurantJsonLd() {
+    const site = useSiteConfig();
+    const info = useSiteInfo();
+    const locale = useLocale();
+    const base = site.url.replace(/\/+$/, '');
+
+    const schema = {
+        '@context': 'https://schema.org',
+        '@type': 'Restaurant',
+        name: info.name,
+        url: `${base}${localePath(locale, 'home')}`,
+        image: `${base}${site.ogImage}`,
+        logo: `${base}${site.logo}`,
+        telephone: info.phone,
+        email: info.email,
+        servesCuisine: ['Burger', 'American', 'Mexican'],
+        priceRange: '€€',
+        acceptsReservations: 'True',
+        hasMenu: `${base}${localePath(locale, 'menu')}`,
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: info.address.street,
+            postalCode: info.address.zip,
+            addressLocality: info.address.city,
+            addressCountry: 'DE',
+        },
+        openingHoursSpecification: info.hours
+            ? DAY_KEYS.filter((key) => info.hours?.[key] && !info.hours[key].closed).map((key) => ({
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: DAY_NAMES[key],
+                opens: info.hours?.[key].open,
+                closes: info.hours?.[key].close,
+            }))
+            : undefined,
+        sameAs: Object.values(info.social).filter(Boolean),
+    };
+
     return (
         <Helmet>
-            <script type="application/ld+json">
-                {JSON.stringify(schema)}
-            </script>
+            <script type="application/ld+json">{JSON.stringify(schema)}</script>
         </Helmet>
     );
 }
-
-// Convenience Components
-
-export function OrganizationJsonLd() {
-    const schema = {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Firmenname", // Should be from config
-        "url": "https://example.com", // Should be from config
-        "logo": "https://example.com/assets/logos/logo.svg", // Should be from config
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "email": "kontakt@example.com", // Should be from config
-            "telephone": "+49 123 456789" // Should be from config
-        },
-        // "sameAs": [] // Social links from config
-    };
-
-    return <JsonLd schema={schema} />;
-}
-
-export function WebSiteJsonLd() {
-    const schema = {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Firmenname",
-        "url": "https://example.com"
-    };
-
-    return <JsonLd schema={schema} />;
-}
-
-// Add other specific JsonLd components as needed based on specs

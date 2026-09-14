@@ -1,370 +1,135 @@
-// src/config/website.config.ts
 import type { WebsiteConfig } from './website.config.schema';
+
+const contact = {
+    email: 'Kontakt@prime-burger.de',
+    phone: '0341 30853717',
+    street: 'Große Fleischergasse 4',
+    zip: '04109',
+    city: 'Leipzig',
+};
+
+// Platzhalter in eckigen Klammern bitte vor dem Livegang ersetzen.
+const legal = {
+    owner: 'Prime Burger Leipzig',
+    legalForm: '[Rechtsform, z. B. GmbH oder Einzelunternehmen]',
+    representative: '[Name der vertretungsberechtigten Person]',
+    registerNumber: '[HRB-Nummer, falls vorhanden]',
+    registerCourt: '[Registergericht, z. B. Amtsgericht Leipzig]',
+    vatId: '[USt-IdNr.]',
+    lastUpdated: '2026-09-01',
+};
 
 export const websiteConfig: WebsiteConfig = {
     site: {
-        name: 'Firmenname',
-        tagline: 'Ihr Slogan hier',
-        description: 'Kurze Beschreibung der Firma für SEO',
-        url: 'https://example.com',
-        logo: {
-            light: '/assets/logos/logo.svg',
-            dark: '/assets/logos/logo-dark.svg',
-            favicon: '/assets/logos/favicon.ico',
-        },
-        contact: {
-            email: 'kontakt@example.com',
-            phone: '+49 123 456789',
-            address: {
-                street: 'Musterstraße 1',
-                city: 'Berlin',
-                zip: '10115',
-                country: 'Deutschland',
-            },
-        },
-        language: 'de',
+        name: 'Prime Burger Leipzig',
+        url: 'https://prime-burger.de',
+        logo: '/assets/logo.png',
+        favicon: '/assets/favicon-32.png',
+        ogImage: '/assets/og-image.jpg',
+        contact,
+        themeColor: '#0e0e0e',
     },
-
-    tokens: {
-        colors: {
-            primary: '200 80% 50%',
-            secondary: '220 60% 40%',
-            accent: '45 100% 50%',
-            background: '0 0% 100%',
-            foreground: '0 0% 10%',
-            muted: '0 0% 96%',
-            destructive: '0 80% 50%',
-        },
-        radius: 'lg',
-        shadows: {
-            sm: '0 1px 2px rgba(0,0,0,0.05)',
-            md: '0 4px 6px rgba(0,0,0,0.1)',
-            lg: '0 10px 15px rgba(0,0,0,0.15)',
-        },
-        typography: {
-            fontFamily: {
-                heading: 'Raleway, sans-serif',
-                body: 'Inter, sans-serif',
-            },
-            fontSizes: {
-                xs: '0.75rem',
-                sm: '0.875rem',
-                base: '1rem',
-                lg: '1.125rem',
-                xl: '1.25rem',
-                '2xl': '1.5rem',
-                '3xl': '1.875rem',
-                '4xl': '2.25rem',
-            },
-        },
-        spacing: {
-            section: '6rem',
-            container: '1280px',
-        },
-        animations: {
-            enabled: true,
-            duration: '300ms',
-            easing: 'ease-in-out',
-        },
-    },
-
-    navigation: {
-        items: [
-            { label: 'Home', href: '/' },
-            { label: 'Über uns', href: '/about' },
-            { label: 'Leistungen', href: '/services' },
-            { label: 'Blog', href: '/blog' },
-            { label: 'Jobs', href: '/jobs' },
-            { label: 'FAQ', href: '/faq' },
-            { label: 'Kontakt', href: '/contact' },
-        ],
-        cta: {
-            text: 'Jetzt starten',
-            href: '/contact',
-            variant: 'default',
-        },
-    },
-
-    pages: {
-        home: {
-            seo: {
-                title: 'Startseite',
-                description: 'Willkommen bei Firmenname - Ihr Partner für...',
-                ogImage: '/assets/images/og-home.jpg',
-            },
-            blocks: [
-                {
-                    type: 'hero',
-                    variant: 'centered',
-                    headline: 'Ihre Headline hier',
-                    subheadline: 'Beschreibender Text unter der Headline',
-                    badge: 'Neu: Feature X',
-                    cta: {
-                        primary: { text: 'Jetzt anfragen', href: '/contact' },
-                        secondary: { text: 'Mehr erfahren', href: '/about' },
-                    },
-                    backgroundImage: '/assets/images/hero-bg.webp',
-                },
-                {
-                    type: 'social-proof',
-                    variant: 'logos',
-                    title: 'Vertraut von führenden Unternehmen',
-                    logos: [
-                        { src: '/assets/logos/client-1.svg', alt: 'Kunde 1' },
-                        { src: '/assets/logos/client-2.svg', alt: 'Kunde 2' },
-                    ],
-                },
-                {
-                    type: 'feature-grid',
-                    variant: 'cards',
-                    title: 'Unsere Leistungen',
-                    subtitle: 'Was wir für Sie tun können',
-                    columns: 3,
-                    features: [
-                        {
-                            icon: 'Zap',
-                            title: 'Schnell',
-                            description: 'Blitzschnelle Umsetzung Ihrer Projekte',
-                        },
-                        {
-                            icon: 'Shield',
-                            title: 'Sicher',
-                            description: 'Höchste Sicherheitsstandards',
-                        },
-                        {
-                            icon: 'Heart',
-                            title: 'Persönlich',
-                            description: 'Individuelle Betreuung',
-                        },
-                    ],
-                },
-                {
-                    type: 'testimonials',
-                    variant: 'carousel',
-                    title: 'Das sagen unsere Kunden',
-                    testimonials: [
-                        {
-                            quote: 'Fantastische Zusammenarbeit!',
-                            author: 'Max Mustermann',
-                            role: 'CEO',
-                            company: 'Musterfirma GmbH',
-                            rating: 5,
-                        },
-                    ],
-                },
-                {
-                    type: 'cta',
-                    variant: 'gradient',
-                    headline: 'Bereit durchzustarten?',
-                    description: 'Kontaktieren Sie uns noch heute',
-                    button: { text: 'Kontakt aufnehmen', href: '/contact' },
-                },
-            ],
-        },
-        about: {
-            seo: { title: 'Über uns', description: 'Erfahren Sie mehr über unser Team' },
-            blocks: [
-                {
-                    type: 'hero',
-                    variant: 'split',
-                    headline: 'Über uns',
-                    subheadline: 'Lernen Sie unser Team kennen',
-                },
-                {
-                    type: 'team',
-                    variant: 'grid',
-                    title: 'Unser Team',
-                    subtitle: 'Die Menschen hinter dem Erfolg',
-                    members: [
-                        {
-                            name: 'Max Mustermann',
-                            role: 'Gründer & CEO',
-                            image: '/assets/images/team-1.jpg',
-                            bio: 'Mit über 10 Jahren Erfahrung...',
-                        },
-                    ],
-                },
-            ],
-        },
-        services: {
-            seo: { title: 'Leistungen', description: 'Unsere Dienstleistungen im Überblick' },
-            blocks: [
-                {
-                    type: 'hero',
-                    variant: 'centered',
-                    headline: 'Unsere Leistungen',
-                    subheadline: 'Maßgeschneiderte Lösungen für Ihr Unternehmen',
-                },
-                {
-                    type: 'feature-grid',
-                    variant: 'bento',
-                    title: 'Was wir bieten',
-                    columns: 3,
-                    features: [
-                        { icon: 'Code', title: 'Webentwicklung', description: 'Moderne Webanwendungen' },
-                        { icon: 'Palette', title: 'Design', description: 'UI/UX Design' },
-                        { icon: 'Server', title: 'Hosting', description: 'Zuverlässiges Hosting' },
-                    ],
-                },
-            ],
-        },
-        contact: {
-            seo: { title: 'Kontakt', description: 'Nehmen Sie Kontakt mit uns auf' },
-            blocks: [
-                {
-                    type: 'hero',
-                    variant: 'centered',
-                    headline: 'Kontakt',
-                    subheadline: 'Wir freuen uns auf Ihre Nachricht',
-                },
-                {
-                    type: 'contact-form',
-                    variant: 'with-info',
-                    title: 'Schreiben Sie uns',
-                    subtitle: 'Wir melden uns innerhalb von 24 Stunden',
-                    fields: [
-                        { name: 'name', label: 'Name', type: 'text', required: true },
-                        { name: 'email', label: 'E-Mail', type: 'email', required: true },
-                        { name: 'phone', label: 'Telefon', type: 'tel' },
-                        { name: 'message', label: 'Nachricht', type: 'textarea', required: true },
-                    ],
-                    submitText: 'Nachricht senden',
-                    successMessage: 'Vielen Dank! Wir melden uns bald.',
-                },
-            ],
-        },
-        faq: {
-            seo: { title: 'FAQ', description: 'Häufig gestellte Fragen' },
-            blocks: [
-                {
-                    type: 'hero',
-                    variant: 'centered',
-                    headline: 'Häufig gestellte Fragen',
-                    subheadline: 'Hier finden Sie Antworten',
-                },
-                {
-                    type: 'faq',
-                    variant: 'accordion',
-                    title: 'FAQ',
-                    items: [
-                        { question: 'Wie lange dauert ein Projekt?', answer: 'Die Projektdauer variiert...' },
-                        { question: 'Was kostet eine Website?', answer: 'Die Kosten hängen vom Umfang ab...' },
-                    ],
-                },
-            ],
-        },
-        blog: {
-            seo: { title: 'Blog', description: 'Neuigkeiten und Artikel' },
-            blocks: [
-                {
-                    type: 'hero',
-                    variant: 'centered',
-                    headline: 'Blog',
-                    subheadline: 'Neuigkeiten und Einblicke',
-                },
-            ],
-        },
-        jobs: {
-            seo: { title: 'Jobs', description: 'Aktuelle Stellenangebote' },
-            blocks: [
-                {
-                    type: 'hero',
-                    variant: 'centered',
-                    headline: 'Jobs',
-                    subheadline: 'Werden Sie Teil unseres Teams',
-                },
-                {
-                    type: 'jobs-list',
-                    title: 'Offene Stellen',
-                    subtitle: 'Aktuelle Möglichkeiten im Überblick',
-                    showFilters: false,
-                },
-            ],
-        },
-    },
-
     legal: {
-        company: {
-            name: 'Firmenname GmbH',
-            legalForm: 'GmbH',
-            registerNumber: 'HRB 12345',
-            registerCourt: 'Amtsgericht Berlin-Charlottenburg',
-            vatId: 'DE123456789',
-            managingDirector: 'Max Mustermann',
+        ...legal,
+        imprint: {
+            de: [
+                {
+                    heading: 'Angaben gemäß § 5 DDG',
+                    content: `<p>${legal.owner}<br>${legal.legalForm}<br>${contact.street}<br>${contact.zip} ${contact.city}</p><p>Vertreten durch: ${legal.representative}</p>`,
+                },
+                {
+                    heading: 'Kontakt',
+                    content: `<p>Telefon: ${contact.phone}<br>E-Mail: ${contact.email}</p>`,
+                },
+                {
+                    heading: 'Registereintrag und Umsatzsteuer',
+                    content: `<p>Registergericht: ${legal.registerCourt}<br>Registernummer: ${legal.registerNumber}<br>Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: ${legal.vatId}</p>`,
+                },
+                {
+                    heading: 'Verbraucherstreitbeilegung',
+                    content: '<p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>',
+                },
+                {
+                    heading: 'Haftung für Inhalte',
+                    content: '<p>Die Inhalte dieser Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Preise und Öffnungszeiten können sich ändern.</p>',
+                },
+            ],
+            en: [
+                {
+                    heading: 'Information pursuant to § 5 DDG',
+                    content: `<p>${legal.owner}<br>${legal.legalForm}<br>${contact.street}<br>${contact.zip} ${contact.city}, Germany</p><p>Represented by: ${legal.representative}</p>`,
+                },
+                {
+                    heading: 'Contact',
+                    content: `<p>Phone: ${contact.phone}<br>Email: ${contact.email}</p>`,
+                },
+                {
+                    heading: 'Register entry and VAT',
+                    content: `<p>Register court: ${legal.registerCourt}<br>Register number: ${legal.registerNumber}<br>VAT ID pursuant to § 27a UStG: ${legal.vatId}</p>`,
+                },
+                {
+                    heading: 'Consumer dispute resolution',
+                    content: '<p>We are neither willing nor obliged to participate in dispute resolution proceedings before a consumer arbitration board.</p>',
+                },
+                {
+                    heading: 'Liability for content',
+                    content: '<p>The content of these pages was created with great care. We cannot guarantee that the content is accurate, complete or up to date. Prices and opening hours are subject to change.</p>',
+                },
+            ],
         },
-        privacyPolicy: [
-            {
-                heading: '1. Verantwortlicher',
-                content: '[HIER EINFÜGEN: Name und Kontakt des Verantwortlichen]',
-            },
-            {
-                heading: '2. Erhobene Daten',
-                content: '[HIER EINFÜGEN: Welche Daten werden erhoben]',
-            },
-        ],
-        imprint: [
-            {
-                heading: 'Angaben gemäß § 5 TMG',
-                content: '[HIER EINFÜGEN: Impressumspflichtangaben]',
-            },
-        ],
-        terms: [
-            {
-                heading: '§ 1 Geltungsbereich',
-                content: '[HIER EINFÜGEN: AGB-Text]',
-            },
-        ],
-        cookieConsent: {
-            enabled: true,
-            title: 'Diese Website verwendet Cookies',
-            description: 'Wir nutzen Cookies, um Ihnen die bestmögliche Erfahrung zu bieten.',
-            categories: {
-                necessary: true,
-                analytics: true,
-                marketing: false,
-            },
-            privacyLink: '/privacy',
+        privacy: {
+            de: [
+                {
+                    heading: '1. Verantwortlicher',
+                    content: `<p>${legal.owner}, ${contact.street}, ${contact.zip} ${contact.city}<br>E-Mail: ${contact.email}, Telefon: ${contact.phone}</p>`,
+                },
+                {
+                    heading: '2. Hosting und Server-Logfiles',
+                    content: '<p>Beim Aufruf dieser Website verarbeitet der Server automatisch technische Daten (IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browsertyp). Diese Daten dienen ausschließlich dem sicheren Betrieb der Website (Art. 6 Abs. 1 lit. f DSGVO) und werden nach kurzer Zeit gelöscht.</p>',
+                },
+                {
+                    heading: '3. Reservierungsanfragen',
+                    content: '<p>Wenn Sie das Reservierungsformular nutzen, verarbeiten wir Name, E-Mail-Adresse, Telefonnummer, Datum, Uhrzeit, Gästezahl und Ihre optionalen Wünsche, um Ihre Anfrage zu bearbeiten und zu bestätigen (Art. 6 Abs. 1 lit. b DSGVO). Sie erhalten eine automatische Eingangsbestätigung per E-Mail. Die Daten werden nach Abschluss der Reservierung und Ablauf gesetzlicher Aufbewahrungsfristen gelöscht.</p>',
+                },
+                {
+                    heading: '4. Cookies',
+                    content: '<p>Die öffentliche Website setzt keine Tracking- oder Marketing-Cookies. Ihre Sprachwahl wird lokal in Ihrem Browser gespeichert (Local Storage) und nicht an uns übertragen.</p>',
+                },
+                {
+                    heading: '5. Externe Links',
+                    content: '<p>Links zu Lieferdiensten (Lieferando, Uber Eats, Wolt) und Kartendiensten führen auf externe Websites. Für deren Datenverarbeitung gelten die Datenschutzhinweise der jeweiligen Anbieter.</p>',
+                },
+                {
+                    heading: '6. Ihre Rechte',
+                    content: '<p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Wenden Sie sich dazu an die oben genannte Kontaktadresse. Außerdem haben Sie das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren.</p>',
+                },
+            ],
+            en: [
+                {
+                    heading: '1. Controller',
+                    content: `<p>${legal.owner}, ${contact.street}, ${contact.zip} ${contact.city}, Germany<br>Email: ${contact.email}, Phone: ${contact.phone}</p>`,
+                },
+                {
+                    heading: '2. Hosting and server logs',
+                    content: '<p>When you visit this website the server automatically processes technical data (IP address, date and time, requested page, browser type). This data is used solely to operate the website securely (Art. 6 (1) (f) GDPR) and is deleted after a short period.</p>',
+                },
+                {
+                    heading: '3. Reservation requests',
+                    content: '<p>When you use the reservation form we process your name, email address, phone number, date, time, number of guests and optional requests to handle and confirm your booking (Art. 6 (1) (b) GDPR). You receive an automatic acknowledgement by email. The data is deleted once the reservation is completed and statutory retention periods have expired.</p>',
+                },
+                {
+                    heading: '4. Cookies',
+                    content: '<p>The public website does not set tracking or marketing cookies. Your language choice is stored locally in your browser (local storage) and is not transmitted to us.</p>',
+                },
+                {
+                    heading: '5. External links',
+                    content: '<p>Links to delivery services (Lieferando, Uber Eats, Wolt) and map services lead to external websites. Their own privacy policies apply to the processing of your data there.</p>',
+                },
+                {
+                    heading: '6. Your rights',
+                    content: '<p>You have the right to access, rectification, erasure, restriction of processing, data portability and objection. Please contact the address above. You also have the right to lodge a complaint with a data protection supervisory authority.</p>',
+                },
+            ],
         },
-    },
-
-    seo: {
-        titleTemplate: '%s | Firmenname',
-        defaultTitle: 'Firmenname - Ihr Partner für...',
-        defaultDescription: 'Kurze SEO-Beschreibung der Website',
-        defaultImage: '/assets/images/og-default.jpg',
-        twitterHandle: '@firmenname',
-        jsonLd: {
-            organization: true,
-            website: true,
-            localBusiness: {
-                type: 'ProfessionalService',
-                priceRange: '€€',
-            },
-        },
-    },
-
-    social: {
-        links: [
-            { platform: 'facebook', url: 'https://facebook.com/firmenname' },
-            { platform: 'instagram', url: 'https://instagram.com/firmenname' },
-            { platform: 'linkedin', url: 'https://linkedin.com/company/firmenname' },
-        ],
-    },
-
-    api: {
-        baseUrl: 'http://localhost/api',
-        endpoints: {
-            blog: '/posts',
-            jobs: '/jobs',
-            contact: '/contact',
-        },
-    },
-
-    features: {
-        blog: true,
-        jobs: true,
-        team: true,
-        contactSlots: false,
-        analytics: true,
     },
 };
