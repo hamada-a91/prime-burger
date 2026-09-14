@@ -15,7 +15,7 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
         <div
             id="mobile-nav"
             className={cn(
-                'lg:hidden fixed inset-x-0 top-[72px] bottom-0 z-40 bg-background transition-opacity duration-200',
+                'lg:hidden fixed inset-x-0 top-[72px] bottom-0 z-[45] bg-background transition-opacity duration-200',
                 open ? 'opacity-100' : 'pointer-events-none opacity-0'
             )}
             aria-hidden={!open}
