@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(5)->by($request->ip())
         );
 
-        RateLimiter::for('contact', fn (Request $request) =>
+        RateLimiter::for('reservation', fn (Request $request) =>
             Limit::perMinute(3)->by($request->ip())
         );
     }

@@ -3,6 +3,11 @@
 return [
 
     /*
+    | Empfänger für Reservierungsanfragen (Fallback: Setting reservation_email, dann contact_email).
+    */
+    'reservation_address' => env('MAIL_RESERVATION_ADDRESS'),
+
+    /*
     |--------------------------------------------------------------------------
     | Default Mailer
     |--------------------------------------------------------------------------

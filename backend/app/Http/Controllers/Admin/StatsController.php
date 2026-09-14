@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\BlogPost;
-use App\Models\ContactSubmission;
-use App\Models\JobListing;
+use App\Models\GalleryImage;
+use App\Models\MenuItem;
+use App\Models\Reservation;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Illuminate\Support\Facades\Schema;
 
 class StatsController extends Controller
 {
@@ -18,7 +17,7 @@ class StatsController extends Controller
         $weekAgo = $now->copy()->subDays(7);
         $monthAgo = $now->copy()->subDays(30);
 
-        $countsByDay = ContactSubmission::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+        $countsByDay = Reservation::selectRaw('DATE(created_at) as date, COUNT(*) as count')
             ->where('created_at', '>=', $monthAgo)
             ->groupBy('date')
             ->orderBy('date')
@@ -31,33 +30,24 @@ class StatsController extends Controller
             ])
             ->values();
 
-        $stats = [
-            'contacts' => [
-                'total' => ContactSubmission::count(),
-                'new' => ContactSubmission::where('status', 'new')->count(),
-                'today' => ContactSubmission::whereDate('created_at', $now->toDateString())->count(),
-                'this_week' => ContactSubmission::where('created_at', '>=', $weekAgo)->count(),
-                'this_month' => ContactSubmission::where('created_at', '>=', $monthAgo)->count(),
+        return response()->json([
+            'reservations' => [
+                'total' => Reservation::count(),
+                'new' => Reservation::where('status', 'new')->count(),
+                'today' => Reservation::whereDate('created_at', $now->toDateString())->count(),
+                'this_week' => Reservation::where('created_at', '>=', $weekAgo)->count(),
+                'upcoming' => Reservation::where('status', 'confirmed')->whereDate('date', '>=', $now->toDateString())->count(),
                 'by_day' => $byDay,
+                'latest' => Reservation::orderByDesc('created_at')->limit(5)->get(),
             ],
-            'blog' => [
-                'total' => BlogPost::count(),
-                'published' => BlogPost::where('is_published', true)->count(),
-                'drafts' => BlogPost::where('is_published', false)->count(),
+            'menu' => [
+                'items' => MenuItem::count(),
+                'unavailable' => MenuItem::where('is_available', false)->count(),
             ],
-            'jobs' => [
-                'total' => JobListing::count(),
-                'active' => JobListing::where('is_active', true)->count(),
-                'expired' => JobListing::where('is_active', true)
-                    ->where('expires_at', '<', $now)
-                    ->count(),
+            'gallery' => [
+                'images' => GalleryImage::count(),
+                'featured' => GalleryImage::where('is_featured', true)->count(),
             ],
-        ];
-
-        if (Schema::hasTable('team_members')) {
-            $stats['team'] = ['total' => \DB::table('team_members')->count()];
-        }
-
-        return response()->json($stats);
+        ]);
     }
 }
