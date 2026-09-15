@@ -31,13 +31,20 @@ php artisan serve --port=8000
 ```bash
 # Frontend (im Projektroot)
 npm install
-cp .env.example .env            # VITE_API_URL=http://localhost:8000/api
+cp .env.example .env            # VITE_API_URL=/api (Vite-Proxy zum Backend auf :8000)
 npm run dev
 ```
 
 - Website: http://localhost:5173 (leitet auf `/de` oder `/en` weiter)
 - Admin: http://localhost:5173/admin, Zugang aus `backend/.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`, Standard `admin@example.com` / `password`)
 - Mails landen lokal in `backend/storage/logs/laravel.log` (`MAIL_MAILER=log`). Für echten Versand SMTP in `backend/.env` eintragen und `MAIL_RESERVATION_ADDRESS` setzen.
+
+## Öffentliche Demo
+
+```bash
+npm run demo                # Cloudflare Quick Tunnel, gibt eine https://…trycloudflare.com-URL aus
+TUNNEL=ngrok npm run demo   # alternativ ngrok
+```
 
 ## Tests
 

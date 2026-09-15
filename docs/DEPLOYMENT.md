@@ -1,5 +1,10 @@
 # Deployment (Produktion)
 
+## Kurz zeigen statt deployen
+
+Für Kundenvorführungen reicht `npm run demo` (Cloudflare Quick Tunnel oder ngrok, siehe [SETUP.md](SETUP.md#öffentliche-demo-tunnel)). Für einen dauerhaft erreichbaren Stand ohne eigenen Server sind kostenlose Optionen mit Laravel + SQLite z. B. Render (Free Web Service, schläft nach Inaktivität), Fly.io (kleines Kontingent) oder Koyeb (Free-Instanz); alle bauen das `backend/Dockerfile`. Persistente Uploads brauchen dort ein Volume, sonst gehen Galerie-Uploads beim Neustart verloren. Für den echten Betrieb ist ein kleiner VPS (Hetzner, netcup) mit dem Docker-Setup unten die einfachste, stabile Variante.
+
+
 `docker-compose.prod.yml` startet drei Container: `frontend` (nginx mit gebautem SPA, Proxy `/api` und `/storage` zum Backend), `api` (php-fpm) und `mysql`. `deploy.sh` zieht den Code, baut die Images, migriert und räumt auf.
 
 ## Erstinstallation auf dem Server

@@ -29,14 +29,26 @@ class GalleryImage extends Model
 
     protected $appends = ['url', 'thumb_url'];
 
+    /**
+     * Relative URLs (/storage/...): Frontend und API sind in Produktion (nginx) und lokal (Vite-Proxy)
+     * same-origin, so funktionieren die Bilder auch hinter Tunneln ohne APP_URL-Anpassung.
+     */
     public function getUrlAttribute(): string
     {
-        return Storage::disk('public')->url($this->path);
+        return self::relativeUrl($this->path);
     }
 
     public function getThumbUrlAttribute(): string
     {
-        return Storage::disk('public')->url($this->thumb_path);
+        return self::relativeUrl($this->thumb_path);
+    }
+
+    private static function relativeUrl(string $path): string
+    {
+        $url = Storage::disk('public')->url($path);
+        $parsed = parse_url($url);
+
+        return ($parsed['path'] ?? '/storage/' . ltrim($path, '/'));
     }
 
     public function deleteFiles(): void

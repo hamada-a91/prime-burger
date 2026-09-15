@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Menu, Phone, X } from 'lucide-react';
 import { useSiteConfig, useSiteInfo } from '@/hooks';
@@ -52,23 +52,23 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
     <>
       <header
         className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-colors duration-300',
+          'fixed inset-x-0 top-0 z-50 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]',
           solid
-            ? 'bg-background/90 backdrop-blur-md border-b border-border'
+            ? 'bg-background/90 backdrop-blur-md border-b border-border shadow-lg shadow-black/20'
             : 'bg-transparent border-b border-transparent'
         )}
       >
         <div className="container-site flex h-[72px] items-center justify-between gap-4">
-          <LocaleLink to="home" className="flex items-center gap-3 shrink-0" aria-label={site.name}>
+          <LocaleLink to="home" className="group flex items-center gap-3 shrink-0" aria-label={site.name}>
             <img
               src={site.logo}
               alt=""
               width={56}
               height={50}
-              className="h-12 w-auto"
+              className="h-12 w-auto transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-1"
               fetchPriority="high"
             />
-            <span className="font-display text-2xl leading-none text-foreground hidden sm:inline">
+            <span className="font-display text-2xl leading-none text-foreground hidden sm:inline transition-colors duration-200 group-hover:text-primary">
               Prime Burger
             </span>
           </LocaleLink>
@@ -80,9 +80,9 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
                 to={item.key}
                 className={({ isActive }) =>
                   cn(
-                    'relative px-3.5 py-2 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground',
+                    'relative px-3.5 py-2 text-[15px] font-semibold text-muted-foreground transition-all duration-200 hover:text-foreground',
                     'after:absolute after:left-3.5 after:right-3.5 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-primary after:origin-left after:scale-x-0 after:transition-transform after:duration-300',
-                    isActive && 'text-foreground after:scale-x-100'
+                    isActive ? 'text-foreground after:scale-x-100' : 'hover:after:scale-x-50 hover:after:opacity-50'
                   )
                 }
               >
@@ -94,13 +94,13 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
           <div className="hidden lg:flex items-center gap-3">
             <a
               href={phoneHref}
-              className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
+              className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
             >
               <Phone className="size-4 text-primary" aria-hidden />
               {phone}
             </a>
             <LanguageSwitch />
-            <Button asChild>
+            <Button asChild size="default">
               <LocaleLink to="reservation">{t('common.reserve')}</LocaleLink>
             </Button>
           </div>
@@ -113,7 +113,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? t('common.closeMenu') : t('common.openMenu')}
-              className="inline-flex size-11 items-center justify-center rounded-md border border-border text-foreground hover:bg-secondary transition-colors"
+              className="inline-flex size-11 items-center justify-center rounded-md border border-border text-foreground hover:bg-secondary transition-all active:scale-95"
             >
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>

@@ -51,6 +51,7 @@ const de = {
         seoTitle: 'Burger Restaurant in Leipzig',
         seoDescription: 'Prime Burger Leipzig: frisch gegrillte Burger, regionales Fleisch, Tacos und Burritos in der Großen Fleischergasse. Tisch reservieren oder liefern lassen.',
         heroEyebrow: 'Grill & Bar in Leipzig, seit 2015',
+        marquee: ['Frisch gegrillt auf Bestellung', 'Fleisch aus regionaler Herkunft', 'Hausgemachte Soßen', 'Vegan & vegetarisch', 'Tacos & Burritos', 'Seit 2015 in Leipzig'],
         infoAddress: 'Mitten in der Innenstadt',
         infoPhone: 'Für Reservierungen und Fragen',
         badgesTitle: 'Wofür wir stehen',

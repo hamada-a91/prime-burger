@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { Flame, Leaf, Printer, Sprout } from 'lucide-react';
 import { useMenu } from '@/hooks/api';
 import { formatPrice, useLocale, useT, usePick } from '@/i18n';
@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SEOHead } from '@/components/seo';
 import { LocaleLink } from '@/components/site/LocaleLink';
 import { PageHero } from '@/components/site/PageHero';
+import { Reveal } from '@/components/site/Reveal';
 import { cn } from '@/lib/utils';
 import type { Allergen, MenuCategory, MenuItem, MenuTag } from '@/types/api';
 
@@ -72,15 +73,15 @@ export function Menu() {
                                 onClick={() => scrollTo(category.id)}
                                 aria-current={active === category.id ? 'true' : undefined}
                                 className={cn(
-                                    'relative shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors',
-                                    active === category.id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                                    'relative shrink-0 rounded-md px-3.5 py-2 text-sm font-semibold transition-all duration-200',
+                                    active === category.id ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-105' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
                                 )}
                             >
                                 {pick(category.name)}
                             </button>
                         ))}
                     </nav>
-                    <div className="hidden shrink-0 items-center gap-1 md:flex" role="group" aria-label="Filter">
+                    <div className="hidden shrink-0 items-center gap-1.5 md:flex" role="group" aria-label="Filter">
                         {FILTERS.map((f) => (
                             <FilterChip key={f} active={filter === f} onClick={() => setFilter(f)}>
                                 {f === 'all' ? t('menu.filterAll') : t(`menu.filters.${f}`)}
@@ -88,7 +89,7 @@ export function Menu() {
                         ))}
                     </div>
                 </div>
-                <div className="container-site flex gap-1 pb-2.5 md:hidden" role="group" aria-label="Filter">
+                <div className="container-site flex gap-1.5 pb-2.5 md:hidden" role="group" aria-label="Filter">
                     {FILTERS.map((f) => (
                         <FilterChip key={f} active={filter === f} onClick={() => setFilter(f)}>
                             {f === 'all' ? t('menu.filterAll') : t(`menu.filters.${f}`)}
@@ -132,41 +133,45 @@ export function Menu() {
                             }}
                             className="scroll-mt-32"
                         >
-                            <CategoryHeader category={category} />
-                            {category.items.length === 0 ? (
-                                <p className="mt-6 text-sm text-muted-foreground">{t('menu.empty')}</p>
-                            ) : (
-                                <ul className="mt-8 grid gap-x-12 gap-y-7 md:grid-cols-2">
-                                    {category.items.map((item) => (
-                                        <MenuRow key={item.id} item={item} />
-                                    ))}
-                                </ul>
-                            )}
+                            <Reveal variant="fade-up">
+                                <CategoryHeader category={category} />
+                                {category.items.length === 0 ? (
+                                    <p className="mt-6 text-sm text-muted-foreground">{t('menu.empty')}</p>
+                                ) : (
+                                    <ul className="mt-8 grid gap-x-12 gap-y-7 md:grid-cols-2">
+                                        {category.items.map((item) => (
+                                            <MenuRow key={item.id} item={item} />
+                                        ))}
+                                    </ul>
+                                )}
+                            </Reveal>
                         </section>
                     ))}
                 </div>
 
                 {/* Allergen legend */}
                 {data && data.length > 0 && (
-                    <section className="mt-20 rounded-lg border border-border bg-card p-6 md:p-8">
-                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                            <div className="max-w-xl">
-                                <h2 className="font-display display-sm text-foreground">{t('menu.allergensTitle')}</h2>
-                                <p className="mt-2 text-sm text-muted-foreground">{t('menu.allergensHint')}</p>
-                            </div>
-                            <Button variant="outline" size="sm" className="no-print shrink-0" onClick={() => window.print()}>
-                                <Printer aria-hidden /> {t('menu.print')}
-                            </Button>
-                        </div>
-                        <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3 lg:grid-cols-4">
-                            {ALLERGENS.map((code) => (
-                                <div key={code} className="flex gap-3">
-                                    <dt className="w-5 shrink-0 font-bold text-primary">{code}</dt>
-                                    <dd className="text-muted-foreground">{t(`menu.allergens.${code}`)}</dd>
+                    <Reveal variant="fade-up">
+                        <section className="mt-20 rounded-lg border border-border bg-card p-6 md:p-8">
+                            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                                <div className="max-w-xl">
+                                    <h2 className="font-display display-sm text-foreground">{t('menu.allergensTitle')}</h2>
+                                    <p className="mt-2 text-sm text-muted-foreground">{t('menu.allergensHint')}</p>
                                 </div>
-                            ))}
-                        </dl>
-                    </section>
+                                <Button variant="outline" size="sm" className="no-print shrink-0" onClick={() => window.print()}>
+                                    <Printer aria-hidden /> {t('menu.print')}
+                                </Button>
+                            </div>
+                            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3 lg:grid-cols-4">
+                                {ALLERGENS.map((code) => (
+                                    <div key={code} className="flex gap-3">
+                                        <dt className="w-5 shrink-0 font-bold text-primary">{code}</dt>
+                                        <dd className="text-muted-foreground">{t(`menu.allergens.${code}`)}</dd>
+                                    </div>
+                                ))}
+                            </dl>
+                        </section>
+                    </Reveal>
                 )}
 
                 <p className="no-print mt-10 text-center text-sm text-muted-foreground">
@@ -187,8 +192,8 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
             onClick={onClick}
             aria-pressed={active}
             className={cn(
-                'shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition-colors',
-                active ? 'border-primary bg-primary/15 text-primary' : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                'shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition-all duration-200',
+                active ? 'border-primary bg-primary/15 text-primary scale-105 shadow-sm shadow-primary/20' : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground hover:scale-102'
             )}
         >
             {children}
@@ -219,9 +224,9 @@ function MenuRow({ item }: { item: MenuItem }) {
     const isSignature = item.tags?.includes('signature');
 
     return (
-        <li className="break-inside-avoid">
+        <li className="break-inside-avoid group/row rounded-md p-2 -m-2 transition-all duration-200 hover:bg-surface-elevated/60">
             <div className="flex items-baseline gap-3">
-                <h3 className="font-bold text-foreground text-[17px] leading-snug">
+                <h3 className="font-bold text-foreground text-[17px] leading-snug transition-colors duration-200 group-hover/row:text-primary">
                     {pick(item.name)}
                     {isSignature && (
                         <span className="ml-2 inline-block align-middle rounded-sm bg-brand-red/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-red">
@@ -231,8 +236,8 @@ function MenuRow({ item }: { item: MenuItem }) {
                 </h3>
                 {item.price !== null && item.price !== undefined && item.price !== '' && (
                     <>
-                        <span className="price-leader flex-1 self-end mb-1.5" aria-hidden />
-                        <span className="tabular shrink-0 font-bold text-primary">{formatPrice(item.price, locale)}</span>
+                        <span className="price-leader flex-1 self-end mb-1.5 transition-opacity duration-200 group-hover/row:opacity-80" aria-hidden />
+                        <span className="tabular shrink-0 font-bold text-primary transition-transform duration-200 group-hover/row:scale-105">{formatPrice(item.price, locale)}</span>
                     </>
                 )}
             </div>

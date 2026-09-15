@@ -54,6 +54,7 @@ const en: Dict = {
         seoTitle: 'Burger Restaurant in Leipzig',
         seoDescription: 'Prime Burger Leipzig: freshly grilled burgers, regional beef, tacos and burritos on Große Fleischergasse. Book a table or order delivery.',
         heroEyebrow: 'Grill & Bar in Leipzig, since 2015',
+        marquee: ['Grilled fresh to order', 'Regionally sourced beef', 'Homemade sauces', 'Vegan & vegetarian', 'Tacos & burritos', 'In Leipzig since 2015'],
         infoAddress: 'Right in the city centre',
         infoPhone: 'For bookings and questions',
         badgesTitle: 'What we stand for',

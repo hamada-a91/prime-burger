@@ -3,7 +3,7 @@
  * Uses HttpOnly session cookies plus XSRF-TOKEN, never localStorage tokens.
  */
 
-const configuredApiUrl = import.meta.env.VITE_API_URL || 'http://localhost/api';
+const configuredApiUrl = import.meta.env.VITE_API_URL || '/api';
 const API_BASE_URL = configuredApiUrl.replace(/\/+$/, '');
 const API_ROOT = API_BASE_URL.replace(/\/api\/?$/, '');
 const csrfMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);

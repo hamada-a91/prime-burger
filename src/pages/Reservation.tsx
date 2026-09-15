@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { SEOHead } from '@/components/seo';
 import { HoursTable } from '@/components/site/HoursTable';
 import { PageHero } from '@/components/site/PageHero';
+import { Reveal } from '@/components/site/Reveal';
+import { CardSpotlight } from '@/components/site/CardSpotlight';
 import { cn } from '@/lib/utils';
 
 const TIME_SLOTS = ['11:30', '12:00', '12:30', '13:00', '13:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00'];
@@ -25,7 +27,7 @@ function todayIso(): string {
 function buildSchema(t: Translate) {
     return z.object({
         name: z.string().trim().min(2, t('reservation.errors.name')).max(120, t('reservation.errors.name')),
-        email: z.email(t('reservation.errors.email')),
+        email: z.string().email(t('reservation.errors.email')),
         phone: z.string().trim().min(5, t('reservation.errors.phone')).max(50, t('reservation.errors.phone')),
         guests: z.number(t('reservation.errors.guests')).int().min(1, t('reservation.errors.guests')).max(20, t('reservation.errors.guests')),
         date: z.string().refine((v) => /^\d{4}-\d{2}-\d{2}$/.test(v) && v >= todayIso(), t('reservation.errors.date')),
@@ -37,7 +39,7 @@ function buildSchema(t: Translate) {
 
 type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
-const fieldClass = 'h-12 rounded-md border-input bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/60 aria-invalid:border-destructive';
+const fieldClass = 'h-12 rounded-md border-input bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/60 aria-invalid:border-destructive transition-colors';
 
 export function Reservation() {
     const t = useT();
@@ -58,7 +60,6 @@ export function Reservation() {
         resolver: zodResolver(schema),
         mode: 'onBlur',
         reValidateMode: 'onChange',
-        defaultValues: { guests: 2, date: '', time: '', notes: '', website: '' },
     });
 
     const errorList = Object.entries(errors).filter(([key]) => key !== 'website');
@@ -86,9 +87,9 @@ export function Reservation() {
             <PageHero title={t('reservation.title')} lead={t('reservation.lead')} image="/assets/burger-table.webp" imagePosition="center 60%" />
 
             <div className="container-site grid gap-12 py-12 md:py-16 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
-                <div>
+                <Reveal variant="fade-right">
                     {sent ? (
-                        <div ref={successRef} tabIndex={-1} className="rounded-lg border border-success/40 bg-card p-8 md:p-10 outline-none fade-up">
+                        <div ref={successRef} tabIndex={-1} className="rounded-lg border border-success/40 bg-card p-8 md:p-10 outline-none fade-up shadow-xl shadow-black/20">
                             <CheckCircle2 className="size-12 text-success" aria-hidden />
                             <h2 className="mt-5 font-display display-md text-foreground">{t('reservation.success.title')}</h2>
                             <p className="mt-3 text-muted-foreground">{t('reservation.success.text', { email: sent.email })}</p>
@@ -113,7 +114,7 @@ export function Reservation() {
                             </Button>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
+                        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6 rounded-lg border border-border bg-card p-6 md:p-10 shadow-xl shadow-black/20">
                             {submitCount > 0 && errorList.length > 0 && (
                                 <div ref={summaryRef} tabIndex={-1} role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-4 outline-none">
                                     <p className="font-semibold text-foreground">{t('reservation.form.errorSummary')}</p>
@@ -189,38 +190,44 @@ export function Reservation() {
                             </div>
                         </form>
                     )}
-                </div>
+                </Reveal>
 
                 <aside className="space-y-6 lg:pt-2">
-                    <div className="rounded-lg border border-border bg-card p-6">
-                        <h2 className="font-display display-sm text-foreground">{t('reservation.callTitle')}</h2>
-                        <p className="mt-2 text-sm text-muted-foreground">{t('reservation.callText')}</p>
-                        <Button asChild variant="outline" size="lg" className="mt-4 w-full">
-                            <a href={info.phoneHref}>
-                                <Phone aria-hidden /> {info.phone}
-                            </a>
-                        </Button>
-                    </div>
+                    <Reveal variant="fade-left" delay={50}>
+                        <CardSpotlight className="p-6">
+                            <h2 className="font-display display-sm text-foreground">{t('reservation.callTitle')}</h2>
+                            <p className="mt-2 text-sm text-muted-foreground">{t('reservation.callText')}</p>
+                            <Button asChild variant="outline" size="lg" className="mt-4 w-full">
+                                <a href={info.phoneHref}>
+                                    <Phone aria-hidden /> {info.phone}
+                                </a>
+                            </Button>
+                        </CardSpotlight>
+                    </Reveal>
 
-                    <div className="rounded-lg border border-border bg-card p-6">
-                        <h2 className="font-display display-sm text-foreground">{t('hours.title')}</h2>
-                        <HoursTable grouped={false} className="mt-4" />
-                    </div>
+                    <Reveal variant="fade-left" delay={120}>
+                        <CardSpotlight className="p-6">
+                            <h2 className="font-display display-sm text-foreground">{t('hours.title')}</h2>
+                            <HoursTable grouped={false} className="mt-4" />
+                        </CardSpotlight>
+                    </Reveal>
 
-                    <div className="rounded-lg border border-border bg-card p-6">
-                        <h2 className="font-display display-sm text-foreground">{t('reservation.infoTitle')}</h2>
-                        <address className="not-italic mt-3 text-sm text-muted-foreground">
-                            {info.address.street}, {info.address.zip} {info.address.city}
-                            <br />
-                            <a href={info.mapsUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">{t('contact.route')}</a>
-                        </address>
-                        {notice && (
-                            <p className="mt-4 flex gap-2 text-sm text-muted-foreground">
-                                <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-                                {notice}
-                            </p>
-                        )}
-                    </div>
+                    <Reveal variant="fade-left" delay={180}>
+                        <CardSpotlight className="p-6">
+                            <h2 className="font-display display-sm text-foreground">{t('reservation.infoTitle')}</h2>
+                            <address className="not-italic mt-3 text-sm text-muted-foreground">
+                                {info.address.street}, {info.address.zip} {info.address.city}
+                                <br />
+                                <a href={info.mapsUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">{t('contact.route')}</a>
+                            </address>
+                            {notice && (
+                                <p className="mt-4 flex gap-2 text-sm text-muted-foreground">
+                                    <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                                    {notice}
+                                </p>
+                            )}
+                        </CardSpotlight>
+                    </Reveal>
                 </aside>
             </div>
         </>
