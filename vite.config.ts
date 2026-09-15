@@ -8,7 +8,6 @@ function htmlFromConfig() {
     name: 'html-from-config',
     transformIndexHtml(html: string) {
       return html
-        .replaceAll('%TITLE%', websiteConfig.site.name)
         .replaceAll('%THEME_COLOR%', websiteConfig.site.themeColor)
     },
   }

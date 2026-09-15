@@ -1,4 +1,3 @@
-import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useSiteConfig } from '@/hooks';
 import { LOCALES, localePath, useLocale, type RouteKey } from '@/i18n';
@@ -12,6 +11,10 @@ interface SEOHeadProps {
     noIndex?: boolean;
 }
 
+/**
+ * React 19 hoists <title>, <meta> and <link> rendered anywhere in the tree into <head>,
+ * so no helmet library is needed.
+ */
 export function SEOHead({ title, description, routeKey, ogImage, noIndex = false }: SEOHeadProps) {
     const site = useSiteConfig();
     const locale = useLocale();
@@ -22,8 +25,7 @@ export function SEOHead({ title, description, routeKey, ogImage, noIndex = false
     const image = `${base}${ogImage ?? site.ogImage}`;
 
     return (
-        <Helmet>
-            <html lang={locale} />
+        <>
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
             <link rel="canonical" href={canonical} />
@@ -45,6 +47,6 @@ export function SEOHead({ title, description, routeKey, ogImage, noIndex = false
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
-        </Helmet>
+        </>
     );
 }

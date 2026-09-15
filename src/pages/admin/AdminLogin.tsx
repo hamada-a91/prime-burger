@@ -47,6 +47,7 @@ export function AdminLogin() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <title>Login | Prime Burger Verwaltung</title>
             <Card className="w-full max-w-md shadow-lg">
                 <CardHeader className="text-center space-y-3">
                     <img src="/assets/logo.png" alt="Prime Burger" width={96} height={85} className="mx-auto h-20 w-auto" />

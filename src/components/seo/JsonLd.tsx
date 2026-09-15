@@ -1,4 +1,3 @@
-import { Helmet } from 'react-helmet-async';
 import { useSiteConfig, useSiteInfo } from '@/hooks';
 import { localePath, useLocale } from '@/i18n';
 import { DAY_KEYS } from '@/lib/opening-hours';
@@ -45,9 +44,6 @@ export function RestaurantJsonLd() {
         sameAs: Object.values(info.social).filter(Boolean),
     };
 
-    return (
-        <Helmet>
-            <script type="application/ld+json">{JSON.stringify(schema)}</script>
-        </Helmet>
-    );
+    // JSON-LD may live in <body>; search engines read it there as well.
+    return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
 }
