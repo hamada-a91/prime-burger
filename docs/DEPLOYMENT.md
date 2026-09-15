@@ -54,7 +54,9 @@ docker compose -f docker-compose.prod.yml exec api php artisan key:generate --fo
 docker compose -f docker-compose.prod.yml exec api php artisan db:seed --force
 ```
 
-Der Seed importiert Speisekarte, Einstellungen und die Galeriefotos aus `material/gallery/` (Ordner muss im Deployment vorhanden sein, liegt im Repo).
+Der Seed importiert Speisekarte, Einstellungen und die Galeriefotos aus `material/gallery/`. Der Ordner wird per Compose als `/var/www/material` (read-only) in den API-Container gemountet; er muss also auf dem Server neben `docker-compose.prod.yml` liegen (ist im Repo enthalten).
+
+Ein `php artisan storage:link` ist in Produktion nicht nötig: nginx liefert `/storage/` direkt aus dem Volume `storage_public`.
 
 Ein Reverse-Proxy (Caddy, Traefik, nginx) mit TLS terminiert auf `127.0.0.1:8080`.
 
@@ -64,7 +66,7 @@ Ein Reverse-Proxy (Caddy, Traefik, nginx) mit TLS terminiert auf `127.0.0.1:8080
 ./deploy.sh
 ```
 
-führt `git pull`, Build, `migrate --force`, `storage:link` und `optimize` aus. Seeder laufen nicht erneut, Inhalte bleiben erhalten.
+führt `git pull`, Build, `migrate --force` und `optimize` aus. Seeder laufen nicht erneut, Inhalte bleiben erhalten.
 
 ## Backups
 

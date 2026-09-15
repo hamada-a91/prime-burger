@@ -18,7 +18,7 @@ for i in {1..30}; do
 done
 
 docker compose -f docker-compose.prod.yml exec -T api php artisan migrate --force
-docker compose -f docker-compose.prod.yml exec -T api php artisan storage:link || true
+# Kein storage:link nötig: nginx liefert /storage direkt aus dem Volume storage_public.
 docker compose -f docker-compose.prod.yml exec -T api php artisan optimize
 
 docker image prune -f

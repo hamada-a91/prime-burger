@@ -11,7 +11,7 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction
 
 COPY . .
-RUN composer dump-autoload --optimize --no-dev     && chown -R www-data:www-data storage bootstrap/cache
+RUN composer dump-autoload --optimize --no-dev     && chown -R www-data:www-data storage bootstrap/cache public
 
 USER www-data
 EXPOSE 9000

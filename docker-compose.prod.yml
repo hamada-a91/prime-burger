@@ -21,6 +21,8 @@ services:
     env_file: backend/.env
     volumes:
       - storage_public:/var/www/html/storage/app/public
+      # Quellfotos für den Galerie-Seeder (php artisan db:seed), nur lesend.
+      - ./material:/var/www/material:ro
     depends_on:
       mysql:
         condition: service_healthy
