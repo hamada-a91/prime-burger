@@ -62,6 +62,22 @@ ss -ltnp | grep -E ":5173|:8000"
 kill <PID>
 ```
 
+## Speisekarte neu importieren
+
+Der `MenuSeeder` läuft nur, wenn die Karte leer ist. Um die Karte komplett neu aus dem Seeder zu importieren, ohne Reservierungen, Galerie oder Einstellungen anzufassen:
+
+```bash
+php artisan menu:refresh
+```
+
+In Produktion (ohne Rückfrage):
+
+```bash
+docker compose -f docker-compose.prod.yml exec api php artisan menu:refresh --force
+```
+
+Achtung: Änderungen, die im Admin an Kategorien oder Gerichten gemacht wurden, gehen dabei verloren.
+
 ## Öffentliche Demo (Tunnel)
 
 Um Kunden den aktuellen Stand zu zeigen, ohne zu deployen:

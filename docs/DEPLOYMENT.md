@@ -87,3 +87,6 @@ Absender-Domain mit SPF/DKIM beim Mail-Provider einrichten, sonst landen Gast-Ma
 - [ ] Social-Links im Admin eingetragen
 - [ ] Testreservierung durchgeführt, beide Mails angekommen
 - [ ] Admin-Passwort geändert
+
+
+change-password: docker compose -f docker-compose.prod.yml exec -e HOME=/tmp -e XDG_CONFIG_HOME=/tmp api php artisan tinker --execute='App\Models\User::where("email","admin@example.com")->update(["email" => "Kontakt@prime-burger.de"]); echo "ok", PHP_EOL;'

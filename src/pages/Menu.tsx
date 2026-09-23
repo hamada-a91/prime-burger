@@ -24,6 +24,7 @@ export function Menu() {
     const [filter, setFilter] = useState<Filter>('all');
     const [active, setActive] = useState<number | null>(null);
     const sectionRefs = useRef<Map<number, HTMLElement>>(new Map());
+    const chipRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
     const categories = useMemo(() => {
         if (!data) return [];
@@ -50,6 +51,12 @@ export function Menu() {
         return () => observer.disconnect();
     }, [categories]);
 
+    // Keep the highlighted category visible in the horizontally scrolling bar.
+    useEffect(() => {
+        if (active === null) return;
+        chipRefs.current.get(active)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    }, [active]);
+
     const scrollTo = (id: number) => {
         const el = sectionRefs.current.get(id);
         if (!el) return;
@@ -65,11 +72,18 @@ export function Menu() {
             {/* Sticky category bar + filters */}
             <div className="no-print sticky top-[72px] z-30 border-b border-border bg-background/95 backdrop-blur-md">
                 <div className="container-site flex items-center gap-3 py-2.5">
-                    <nav aria-label={t('menu.categoriesLabel')} className="no-scrollbar -mx-1 flex flex-1 gap-1 overflow-x-auto px-1">
+                    <nav
+                        aria-label={t('menu.categoriesLabel')}
+                        className="no-scrollbar -mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto px-1 [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-28px),transparent)]"
+                    >
                         {(data ?? []).map((category) => (
                             <button
                                 key={category.id}
                                 type="button"
+                                ref={(el) => {
+                                    if (el) chipRefs.current.set(category.id, el);
+                                    else chipRefs.current.delete(category.id);
+                                }}
                                 onClick={() => scrollTo(category.id)}
                                 aria-current={active === category.id ? 'true' : undefined}
                                 className={cn(

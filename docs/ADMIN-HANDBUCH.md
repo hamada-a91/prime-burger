@@ -34,6 +34,8 @@ Links die Kategorien, rechts die Gerichte der ausgewählten Kategorie.
 
 Die Speisekarte hat bewusst keine Fotos; Bilder gehören in die Galerie.
 
+Der aktuelle Stand der importierten Karte liegt zum Gegenlesen in [material/speisekarte-2026-09.md](../material/speisekarte-2026-09.md).
+
 ## Galerie
 
 **Hochladen**: Bilder in das gestrichelte Feld ziehen oder „Auswählen“. Mehrere Dateien gleichzeitig möglich (JPG, PNG, WebP, max. 15 MB). Die Kategorie neben dem Button gilt für alle hochgeladenen Bilder. Bilder werden automatisch verkleinert und als WebP gespeichert.

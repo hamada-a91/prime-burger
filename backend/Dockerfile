@@ -13,6 +13,9 @@ RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction
 COPY . .
 RUN composer dump-autoload --optimize --no-dev     && chown -R www-data:www-data storage bootstrap/cache public
 
+# php artisan tinker braucht ein beschreibbares HOME (psysh legt dort Konfiguration an).
+ENV HOME=/tmp
+
 USER www-data
 EXPOSE 9000
 CMD ["php-fpm"]
