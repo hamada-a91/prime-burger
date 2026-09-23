@@ -75,6 +75,37 @@ führt `git pull`, Build, `migrate --force` und `optimize` aus. Seeder laufen ni
 
 ## E-Mail-Versand
 
+### IONOS-Postfach des Kunden
+
+```
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtp
+MAIL_HOST=smtp.ionos.de
+MAIL_PORT=587
+MAIL_USERNAME=kontakt@kundendomain.de
+MAIL_PASSWORD=<Passwort des Postfachs>
+MAIL_FROM_ADDRESS="kontakt@kundendomain.de"
+MAIL_FROM_NAME="Prime Burger Leipzig"
+MAIL_RESERVATION_ADDRESS=kontakt@kundendomain.de
+```
+
+Wichtig: `MAIL_USERNAME` ist die vollständige E-Mail-Adresse, und `MAIL_FROM_ADDRESS` muss dasselbe Postfach sein. IONOS weist Mails mit fremdem Absender ab. Port 587 nutzt STARTTLS (`MAIL_SCHEME=smtp`); alternativ Port 465 mit `MAIL_SCHEME=smtps`.
+
+Nach jeder Änderung an `backend/.env` muss der Container neu erzeugt werden, `env_file` wird nur beim Start gelesen:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d api
+docker compose -f docker-compose.prod.yml exec api php artisan optimize
+```
+
+Testmail:
+
+```bash
+docker compose -f docker-compose.prod.yml exec api php artisan tinker --execute='Mail::raw("Testmail von der Website", fn ($m) => $m->to("kontakt@kundendomain.de")->subject("SMTP-Test")); echo "gesendet", PHP_EOL;'
+```
+
+
+
 Beide Mails (`ReservationRequestMail`, `ReservationReceivedMail`) sind queue-fähig. Mit `QUEUE_CONNECTION=sync` werden sie im Request versendet (einfach, leicht verzögert). Für einen Queue-Worker: `QUEUE_CONNECTION=database`, dann `php artisan queue:work` als zusätzlichen Container/Prozess betreiben.
 
 Absender-Domain mit SPF/DKIM beim Mail-Provider einrichten, sonst landen Gast-Mails im Spam.
