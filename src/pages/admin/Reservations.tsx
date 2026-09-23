@@ -42,7 +42,11 @@ export function Reservations() {
         try {
             const updated = await updateStatus.mutateAsync({ id: reservation.id, status: next });
             setSelected((current) => (current?.id === updated.id ? updated : current));
-            toast.success(`Status: ${STATUS_LABELS[next]}`);
+            toast.success(
+                updated.mail_sent
+                    ? `Bestätigt. ${updated.name} hat die Zusage per E-Mail erhalten.`
+                    : `Status: ${STATUS_LABELS[next]}`
+            );
         } catch {
             toast.error('Status konnte nicht geändert werden.');
         }
@@ -196,7 +200,9 @@ export function Reservations() {
                                 )}
                                 <Button variant="ghost" className="ml-auto text-destructive hover:text-destructive" onClick={() => setToDelete(selected)}><Trash2 /> Löschen</Button>
                             </div>
-                            <p className="text-xs text-muted-foreground">Hinweis: Die Bestätigung an den Gast senden Sie per E-Mail oder Telefon. Der Status dient der internen Übersicht.</p>
+                            <p className="text-xs text-muted-foreground">
+                                „Bestätigt“ schickt dem Gast automatisch eine Zusage per E-Mail (in seiner Sprache). Für Absagen und Rückfragen bitte anrufen oder auf die E-Mail antworten.
+                            </p>
                         </>
                     )}
                 </DialogContent>

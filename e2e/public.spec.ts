@@ -16,10 +16,12 @@ test.describe('Öffentliche Seiten', () => {
 
     test('Speisekarte lädt Kategorien und Filter', async ({ page }) => {
         await page.goto('/de/speisekarte');
-        await expect(page.getByRole('heading', { name: 'Beef Burger' })).toBeVisible();
+        // level 2 + exact: die Karte enthält auch Gerichte wie "Pulled Beef Burger" (h3).
+        const beefHeading = page.getByRole('heading', { level: 2, name: 'Beef Burger', exact: true });
+        await expect(beefHeading).toBeVisible();
         await page.getByRole('button', { name: 'Vegan', exact: true }).first().click();
-        await expect(page.getByRole('heading', { name: 'Vegane Burger' })).toBeVisible();
-        await expect(page.getByRole('heading', { name: 'Beef Burger' })).toHaveCount(0);
+        await expect(page.getByRole('heading', { level: 2, name: 'Vegane Burger', exact: true })).toBeVisible();
+        await expect(beefHeading).toHaveCount(0);
     });
 
     test('Galerie öffnet die Lightbox', async ({ page }) => {

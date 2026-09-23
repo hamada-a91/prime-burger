@@ -13,8 +13,12 @@ Jede Anfrage über das Website-Formular erscheint hier und geht gleichzeitig per
 Ablauf:
 
 1. Anfrage anklicken. Im Dialog stehen Termin, Personenzahl, Telefon, E-Mail und Wünsche.
-2. Verfügbarkeit prüfen und den Gast per E-Mail (Link öffnet das Mailprogramm mit Betreff) oder Telefon bestätigen bzw. absagen.
-3. Status setzen: **Bestätigt**, **Abgelehnt** oder **Archiviert**. Der Status dient nur der internen Übersicht.
+2. Verfügbarkeit prüfen.
+3. Status setzen:
+   - **Bestätigt**: Der Gast bekommt automatisch eine Zusage per E-Mail, in seiner Sprache, mit Datum, Uhrzeit, Personenzahl, Adresse und der Telefonnummer für Änderungen. Die Mail geht nur beim ersten Wechsel auf „Bestätigt“ raus, nicht bei jedem Klick.
+   - **Abgelehnt** und **Archiviert**: verschicken nichts. Für eine Absage bitte anrufen oder auf die Anfrage-E-Mail antworten.
+
+Die E-Mail- und Telefon-Links im Dialog öffnen direkt das Mailprogramm bzw. wählen die Nummer.
 
 Filter oben: Status, Datum, Suche nach Name/E-Mail/Telefon. Löschen entfernt die Anfrage endgültig.
 

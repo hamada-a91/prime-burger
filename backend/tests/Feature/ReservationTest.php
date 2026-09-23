@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Mail\ReservationConfirmedMail;
 use App\Mail\ReservationReceivedMail;
 use App\Mail\ReservationRequestMail;
+use App\Models\Reservation;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -66,6 +68,44 @@ class ReservationTest extends TestCase
 
         $this->assertDatabaseCount('reservations', 0);
         Mail::assertNothingOutgoing();
+    }
+
+    public function test_confirming_a_reservation_notifies_the_guest_once(): void
+    {
+        Mail::fake();
+        $this->withHeader('X-Locale', 'en')->postJson('/api/reservations', $this->payload());
+        $reservation = Reservation::firstOrFail();
+        $admin = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->patchJson("/api/admin/reservations/{$reservation->id}/status", ['status' => 'confirmed'])
+            ->assertOk()
+            ->assertJsonPath('mail_sent', true);
+
+        Mail::assertQueued(ReservationConfirmedMail::class, fn ($mail) => $mail->hasTo($reservation->email));
+        Mail::assertQueuedCount(3); // Anfrage ans Restaurant, Eingangsbestätigung, Zusage
+
+        // Erneutes Speichern desselben Status schickt keine zweite Zusage.
+        $this->actingAs($admin)
+            ->patchJson("/api/admin/reservations/{$reservation->id}/status", ['status' => 'confirmed'])
+            ->assertOk()
+            ->assertJsonPath('mail_sent', false);
+
+        Mail::assertQueuedCount(3);
+    }
+
+    public function test_declining_a_reservation_sends_no_guest_mail(): void
+    {
+        Mail::fake();
+        $this->postJson('/api/reservations', $this->payload());
+        $reservation = Reservation::firstOrFail();
+
+        $this->actingAs(User::factory()->create())
+            ->patchJson("/api/admin/reservations/{$reservation->id}/status", ['status' => 'declined'])
+            ->assertOk()
+            ->assertJsonPath('mail_sent', false);
+
+        Mail::assertNotQueued(ReservationConfirmedMail::class);
     }
 
     public function test_admin_can_list_and_update_reservation_status(): void

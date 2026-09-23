@@ -32,11 +32,14 @@ export function useAdminReservations(filters: ReservationFilters = {}) {
     });
 }
 
+/** `mail_sent` ist true, wenn der Gast dadurch die automatische Zusage bekommen hat. */
+export type StatusUpdateResult = Reservation & { mail_sent: boolean };
+
 export function useUpdateReservationStatus() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ id, status }: { id: number; status: ReservationStatus }) =>
-            api.patch<Reservation>(`/admin/reservations/${id}/status`, { status }),
+            api.patch<StatusUpdateResult>(`/admin/reservations/${id}/status`, { status }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin', 'reservations'] });
             queryClient.invalidateQueries({ queryKey: ['admin', 'stats'] });
