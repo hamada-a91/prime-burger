@@ -36,13 +36,15 @@ class ReservationController extends Controller
         $validated['locale'] = in_array(app()->getLocale(), ['de', 'en']) ? app()->getLocale() : 'de';
         $reservation = Reservation::create($validated);
 
-        $restaurantEmail = config('mail.reservation_address')
-            ?: Setting::get('reservation_email')
+        // Reihenfolge: Admin-Einstellung zuerst, damit das Restaurant den Empfänger selbst ändern kann.
+        $restaurantEmail = Setting::get('reservation_email')
+            ?: config('mail.reservation_address')
             ?: Setting::get('contact_email')
             ?: config('mail.from.address');
 
         if ($restaurantEmail) {
             Mail::to($restaurantEmail)->send(new ReservationRequestMail($reservation));
+            Log::info('Reservierungsanfrage versendet', ['id' => $reservation->id, 'an' => $restaurantEmail]);
         } else {
             Log::warning('Keine Empfängeradresse für Reservierungen konfiguriert.');
         }

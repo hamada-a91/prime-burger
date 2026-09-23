@@ -89,6 +89,8 @@ MAIL_FROM_NAME="Prime Burger Leipzig"
 MAIL_RESERVATION_ADDRESS=kontakt@kundendomain.de
 ```
 
+Empfänger der Reservierungsanfragen: Vorrang hat **Admin → Einstellungen → Kontakt → „Empfänger für Reservierungsanfragen“**, danach `MAIL_RESERVATION_ADDRESS`, danach die öffentliche Kontaktadresse. Am besten überall dieselbe, existierende Adresse eintragen.
+
 Wichtig: `MAIL_USERNAME` ist die vollständige E-Mail-Adresse, und `MAIL_FROM_ADDRESS` muss dasselbe Postfach sein. IONOS weist Mails mit fremdem Absender ab. Port 587 nutzt STARTTLS (`MAIL_SCHEME=smtp`); alternativ Port 465 mit `MAIL_SCHEME=smtps`.
 
 Nach jeder Änderung an `backend/.env` muss der Container neu erzeugt werden, `env_file` wird nur beim Start gelesen:

@@ -17,11 +17,13 @@ class StatsController extends Controller
         $weekAgo = $now->copy()->subDays(7);
         $monthAgo = $now->copy()->subDays(30);
 
-        $countsByDay = Reservation::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+        // Alias bewusst nicht "date": die Tabelle hat eine Spalte gleichen Namens, MySQL würde
+        // im GROUP BY die Spalte statt des Alias nehmen (Fehler 1055 bei ONLY_FULL_GROUP_BY).
+        $countsByDay = Reservation::selectRaw('DATE(created_at) as day, COUNT(*) as total')
             ->where('created_at', '>=', $monthAgo)
-            ->groupBy('date')
-            ->orderBy('date')
-            ->pluck('count', 'date');
+            ->groupBy('day')
+            ->orderBy('day')
+            ->pluck('total', 'day');
 
         $byDay = collect(CarbonPeriod::create($monthAgo->toDateString(), $now->toDateString()))
             ->map(fn (Carbon $date) => [
